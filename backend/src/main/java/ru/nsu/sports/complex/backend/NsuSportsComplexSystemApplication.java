@@ -1,4 +1,4 @@
-package ru.nsu.fit.nsu_sports_complex_system;
+package ru.nsu.sports.complex.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
