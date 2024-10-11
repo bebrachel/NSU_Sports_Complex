@@ -1,0 +1,8 @@
+server.port:8081
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/nsu_sports_complex_database
+
+spring.datasource.username=
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto = create
