@@ -1,9 +1,36 @@
 services:
-  database:
-    image: 'postgres:15.2'
-    ports:
-      - '5432'
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
     environment:
-      - 'POSTGRES_USER='
-      - 'POSTGRES_DB='
-      - 'POSTGRES_PASSWORD='
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8081:8080"
+    networks:
+      - backend_network
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16.4
+    container_name: database
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '5432:5432'
+    networks:
+      - backend_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  backend_network:
+
+volumes:
+  postgres_data:
