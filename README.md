@@ -10,3 +10,18 @@
 5) Получение инфррмции о секциях (может каждый)
 6) Редактирование новостей (админ)
 7) Удаление новостей (админ)
+
+
+# How to start our application
+
+## Locally
+
+`./gradlew.bat bootRun`
+
+## Docker
+
+`docker-compose up --build`
+
+### Experimental feature
+
+`./gradlew.bat bootRun -PuseDocker`
