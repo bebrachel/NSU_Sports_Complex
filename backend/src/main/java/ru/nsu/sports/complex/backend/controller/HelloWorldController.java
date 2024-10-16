@@ -1,4 +1,4 @@
-package ru.nsu.sports.complex.backend.controllers;
+package ru.nsu.sports.complex.backend.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
