@@ -34,15 +34,13 @@ public class SectionServiceImpl implements SectionService {
         return repository.save(section);
     }
 
-    // ПОТЕТСТИТЬ, точно ли он заменит, а не создаст дубликат
-    // Не заменяет, надо думать
     @Override
-    public Section updateSection(Section section) {
-        return repository.save(section);
-    }
-
-    @Override
-    public boolean deleteByName(String name) {
-        return repository.deleteByName(name);
+    public boolean deleteSection(Integer id) {
+        Section section = repository.findById(id).orElse(null);
+        if (section == null) {
+            return false;
+        }
+        repository.delete(section);
+        return true;
     }
 }
