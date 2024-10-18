@@ -10,6 +10,6 @@ public interface SectionService {
     Section findByName(String name);
     List<Section> findAllSections();
     Section saveSection(Section section);
-    Section updateSection(Section section);
-    boolean deleteByName(String name);
+    //Section updateSection(Section section);
+    boolean deleteSection(Integer id);
 }
