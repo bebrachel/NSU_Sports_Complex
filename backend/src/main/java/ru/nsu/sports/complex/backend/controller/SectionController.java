@@ -16,7 +16,7 @@ import java.util.List;
 public class SectionController {
     private final SectionService service;
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Section> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
         if (section != null) {
@@ -46,13 +46,8 @@ public class SectionController {
         return service.saveSection(section);
     }
 
-    @PutMapping
-    public Section updateSection(@RequestBody Section section) {
-        return service.updateSection(section);
-    }
-
-    @DeleteMapping("/delete/{name}")
-    public boolean deleteSection(@PathVariable String name) {
-        return service.deleteByName(name);
+    @DeleteMapping("/{id}")
+    public boolean deleteSection(@PathVariable Integer id) {
+        return service.deleteSection(id);
     }
 }
