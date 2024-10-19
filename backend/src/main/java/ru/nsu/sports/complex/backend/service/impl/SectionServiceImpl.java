@@ -18,7 +18,6 @@ public class SectionServiceImpl implements SectionService {
         return repository.findById(id).orElse(null);
     }
 
-    // ПОТЕТСТИТЬ, что будет, если такого не будет
     @Override
     public Section findByName(String name) {
         return repository.findByName(name);
@@ -30,7 +29,7 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
-    public Section saveSection(Section section) {
+    public Section createSection(Section section) {
         return repository.save(section);
     }
 

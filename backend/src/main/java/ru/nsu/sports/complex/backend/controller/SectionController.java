@@ -2,6 +2,7 @@ package ru.nsu.sports.complex.backend.controller;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,13 @@ public class SectionController {
     }
 
     @PostMapping
-    public Section saveSection(@RequestBody Section section) {
-        return service.saveSection(section);
+    public ResponseEntity<Section> createSection(@RequestBody Section section) {
+        try {
+            Section newSection = service.createSection(section);
+            return new ResponseEntity<>(newSection, HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/{id}")
