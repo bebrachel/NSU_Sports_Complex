@@ -9,7 +9,7 @@ public interface SectionService {
     Section findById(Integer id);
     Section findByName(String name);
     List<Section> findAllSections();
-    Section saveSection(Section section);
+    Section createSection(Section section);
     //Section updateSection(Section section);
     boolean deleteSection(Integer id);
 }
