@@ -1,5 +1,10 @@
 package ru.nsu.sports.complex.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,12 @@ public class UserController {
         this.userConverter = userConverter;
     }
 
+    @Operation(summary = "Создать список созданных пользователей.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список пользователей.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = List.class))
+            })})
     @GetMapping
     public ResponseEntity<List<User>> loadAll() {
         LOGGER.info("start loadAll users");
@@ -41,6 +52,12 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Получить информацию о пользователе по Id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = UserDTO.class))
+            })})
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> loadOne(@PathVariable int id) {
         LOGGER.info("start loadOne user by id: {}", id);
@@ -54,6 +71,12 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Создать нового пользователя.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Созданный пользователь.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = UserDTO.class))
+            })})
     @PostMapping
     public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO) {
         LOGGER.info("start creating user: {}", userDTO);
@@ -66,6 +89,12 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Обновить данные существующего пользователя.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Обновленный пользователь.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = UserDTO.class))
+            })})
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable int id, @RequestBody UserDTO userDTO) {
         LOGGER.info("start update user: {}", userDTO);
@@ -78,6 +107,12 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Удалить секцию.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = Void.class))
+            })})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         if (userService.delete(id))
