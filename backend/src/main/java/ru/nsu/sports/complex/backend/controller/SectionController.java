@@ -11,34 +11,38 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.sports.complex.backend.converter.SectionConverter;
+import ru.nsu.sports.complex.backend.dto.SectionDTO;
 import ru.nsu.sports.complex.backend.model.Section;
 import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/sections")
 @AllArgsConstructor
 public class SectionController {
     private final SectionService service;
+    private final SectionConverter converter;
 
     @Operation(summary = "Получить информацию о секции по id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Секция.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = Section.class))
+                    @Schema(implementation = SectionDTO.class))
             })})
     @GetMapping("/{id}")
-    public ResponseEntity<Section> findById(@PathVariable Integer id) {
+    public ResponseEntity<SectionDTO> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
         if (section != null) {
-            return new ResponseEntity<>(section, HttpStatus.OK);
+            return new ResponseEntity<>(converter.sectionToDTO(section), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Operation(summary = "Получить информацию о секции по имени.")
+    @Operation(summary = "Получить информацию о секции по названию.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Секция.", content = {
                     @Content(mediaType = "application/json", schema =
@@ -61,34 +65,40 @@ public class SectionController {
                     @Schema(implementation = List.class))
             })})
     @GetMapping
-    public List<Section> findAllSections() {
-        return service.findAllSections();
+    public List<SectionDTO> findAllSections() {
+        return service.findAllSections().stream()
+                .map(converter::sectionToDTO)
+                .collect(Collectors.toList());
     }
 
     @Operation(summary = "Создать новую секцию.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Созданная секция.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = Section.class))
+                    @Schema(implementation = SectionDTO.class))
             })})
     @PostMapping
-    public ResponseEntity<Section> createSection(@RequestBody Section section) {
+    public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
         try {
-            Section newSection = service.createSection(section);
-            return new ResponseEntity<>(newSection, HttpStatus.OK);
+            Section newSection = service.createSection(converter.DTOtoSection(sectionDTO));
+            return new ResponseEntity<>(converter.sectionToDTO(newSection), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Operation(summary = "Удалить секцию по id.")
+    @Operation(summary = "Удалить секцию по названию.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = " true -- секция с таким id существует и удаление успешно /n false -- иначе", content = {
+            @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = Boolean.class))
+                    @Schema())
             })})
-    @DeleteMapping("/{id}")
-    public boolean deleteSection(@PathVariable Integer id) {
-        return service.deleteSection(id);
+    @DeleteMapping("/{name}")
+    public ResponseEntity<Void> deleteSection(@PathVariable String name) {
+        if (service.deleteSection(name)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
