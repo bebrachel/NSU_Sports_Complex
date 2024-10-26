@@ -93,6 +93,7 @@ public class SectionController {
         }
     }
 
+<<<<<<< HEAD
     @Operation(summary = "Обновить поля секции.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Обновленная секция.", content = {
@@ -100,6 +101,8 @@ public class SectionController {
                     @Schema(implementation = Section.class))
             })
     })
+=======
+>>>>>>> ec5ddf2 (crum-30: add PUT Request to update section)
     @PutMapping("/{id}")
     public ResponseEntity<Section> updateSection(@PathVariable Integer id, @RequestBody Section section) {
         try {
