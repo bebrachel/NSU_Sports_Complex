@@ -20,7 +20,7 @@ import ru.nsu.sports.complex.backend.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
