@@ -17,6 +17,7 @@ import ru.nsu.sports.complex.backend.model.Section;
 import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -83,6 +84,16 @@ public class SectionController {
             Section newSection = service.createSection(converter.DTOtoSection(sectionDTO));
             return new ResponseEntity<>(converter.sectionToDTO(newSection), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Section> updateSection(@PathVariable Integer id, @RequestBody Section section) {
+        try {
+            Section updatedSection = service.updateSection(section, id);
+            return new ResponseEntity<>(updatedSection, HttpStatus.OK);
+        } catch (NoSuchElementException | DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
