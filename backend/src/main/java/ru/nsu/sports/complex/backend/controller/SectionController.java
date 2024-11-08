@@ -87,15 +87,30 @@ public class SectionController {
         }
     }
 
+    @Operation(summary = "Удалить секцию по id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema())
+            })})
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSectionById(@PathVariable Integer id) {
+        if (service.deleteSectionById(id)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Operation(summary = "Удалить секцию по названию.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema())
             })})
-    @DeleteMapping("/{name}")
-    public ResponseEntity<Void> deleteSection(@PathVariable String name) {
-        if (service.deleteSection(name)) {
+    @DeleteMapping("/name/{name}")
+    public ResponseEntity<Void> deleteSectionByName(@PathVariable String name) {
+        if (service.deleteSectionByName(name)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
