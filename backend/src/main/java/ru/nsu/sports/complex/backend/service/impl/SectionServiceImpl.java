@@ -59,25 +59,6 @@ public class SectionServiceImpl implements SectionService {
 
     @Transactional
     @Override
-    public Section updateSection(Section section, Integer id) {
-        Section sectionInDB = repository.findById(id).orElseThrow();
-        if (section.getName() != null) {
-            sectionInDB.setName(section.getName());
-        }
-        if (section.getPlace() != null) {
-            sectionInDB.setPlace(section.getPlace());
-        }
-        if (section.getTeacher() != null) {
-            sectionInDB.setTeacher(section.getTeacher());
-        }
-        if (section.getSchedule() != null) {
-            sectionInDB.setSchedule(section.getSchedule());
-        }
-        return sectionInDB;
-    }
-
-    @Transactional
-    @Override
     public boolean deleteSectionById(Integer id) {
         Section section = repository.findById(id).orElse(null);
         if (section == null) {
