@@ -33,7 +33,7 @@ public class UserController {
         this.userConverter = userConverter;
     }
 
-    @Operation(summary = "Создать список созданных пользователей.")
+    @Operation(summary = "Получить список созданных пользователей.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список пользователей.", content = {
                     @Content(mediaType = "application/json", schema =
@@ -109,9 +109,9 @@ public class UserController {
 
     @Operation(summary = "Удалить секцию.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "", content = {
+            @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = Void.class))
+                    @Schema())
             })})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {

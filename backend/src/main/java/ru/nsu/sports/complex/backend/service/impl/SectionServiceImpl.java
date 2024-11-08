@@ -59,8 +59,19 @@ public class SectionServiceImpl implements SectionService {
 
     @Transactional
     @Override
-    public boolean deleteSection(Integer id) {
+    public boolean deleteSectionById(Integer id) {
         Section section = repository.findById(id).orElse(null);
+        if (section == null) {
+            return false;
+        }
+        repository.delete(section);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteSectionByName(String name) {
+        Section section = repository.findByName(name);
         if (section == null) {
             return false;
         }

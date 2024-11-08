@@ -11,5 +11,6 @@ public interface SectionService {
     List<Section> findAllSections();
     Section createSection(Section section);
     Section updateSection(Section section, Integer id);
-    boolean deleteSection(Integer id);
+    boolean deleteSectionById(Integer id);
+    boolean deleteSectionByName(String name);
 }
