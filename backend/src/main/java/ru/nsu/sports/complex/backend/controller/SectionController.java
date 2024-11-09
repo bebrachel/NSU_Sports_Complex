@@ -127,4 +127,24 @@ public class SectionController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Operation(summary = "Зарегистрировать пользователя в секции.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь успешно записан в секцию.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = SectionDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Ошибка при регистрации.", content = @Content)
+    })
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUserInSection(
+            @RequestParam Integer userId,
+            @RequestParam Integer sectionId) {
+        try {
+            service.registerUserInSection(userId, sectionId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
