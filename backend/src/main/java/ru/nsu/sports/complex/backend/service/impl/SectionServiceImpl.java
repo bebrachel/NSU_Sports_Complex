@@ -54,6 +54,7 @@ public class SectionServiceImpl implements SectionService {
         if (section.getSchedule() != null) {
             sectionInDB.setSchedule(section.getSchedule());
         }
+        repository.save(sectionInDB);
         return sectionInDB;
     }
 
