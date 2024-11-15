@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-public class SectionRepositoryTest {
+class SectionRepositoryTest {
 
 
     @Autowired
@@ -23,7 +23,7 @@ public class SectionRepositoryTest {
 
     // Это заодно и тестирование метода save()
     @BeforeEach
-    public void setup() {
+    void setup() {
         // Очистка таблицы перед каждым тестом
         repository.deleteAll();
 
@@ -42,13 +42,13 @@ public class SectionRepositoryTest {
     }
 
     @Test
-    public void testFindByName() {
+    void testFindByName() {
         Section section = repository.findByName(section1.getName());
         assertEquals(section, section1);
     }
 
     @Test
-    public void testFindById() {
+    void testFindById() {
         Section sectionByName = repository.findByName(section1.getName());
         assertNotNull(sectionByName);
         Integer id = sectionByName.getId();
@@ -58,13 +58,13 @@ public class SectionRepositoryTest {
     }
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         List<Section> sections = repository.findAll();
         assertEquals(sections.size(), 2);
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         List<Section> sections = repository.findAll();
         int count = sections.size();
         Section section = sections.get(0);
@@ -74,7 +74,7 @@ public class SectionRepositoryTest {
     }
 
     @Test
-    public void testDeleteAll() {
+    void testDeleteAll() {
         int count = repository.findAll().size();
         assertNotEquals(count, 0);
         repository.deleteAll();
