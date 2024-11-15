@@ -32,7 +32,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", description = "Секция.", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = SectionDTO.class))
-            })})
+            })
+    })
     @GetMapping("/{id}")
     public ResponseEntity<SectionDTO> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
@@ -48,7 +49,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", description = "Секция.", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = Section.class))
-            })})
+            })
+    })
     @GetMapping("/name/{name}")
     public ResponseEntity<Section> findByName(@PathVariable String name) {
         Section section = service.findByName(name);
@@ -64,7 +66,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", description = "Список секций.", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = List.class))
-            })})
+            })
+    })
     @GetMapping
     public List<SectionDTO> findAllSections() {
         return service.findAllSections().stream()
@@ -77,7 +80,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", description = "Созданная секция.", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = SectionDTO.class))
-            })})
+            })
+    })
     @PostMapping
     public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
         try {
@@ -88,6 +92,13 @@ public class SectionController {
         }
     }
 
+    @Operation(summary = "Обновить поля секции.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Обновленная секция.", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = Section.class))
+            })
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Section> updateSection(@PathVariable Integer id, @RequestBody Section section) {
         try {
@@ -103,7 +114,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema())
-            })})
+            })
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSectionById(@PathVariable Integer id) {
         if (service.deleteSectionById(id)) {
@@ -118,7 +130,8 @@ public class SectionController {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema())
-            })})
+            })
+    })
     @DeleteMapping("/name/{name}")
     public ResponseEntity<Void> deleteSectionByName(@PathVariable String name) {
         if (service.deleteSectionByName(name)) {
