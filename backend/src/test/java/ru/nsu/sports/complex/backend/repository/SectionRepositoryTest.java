@@ -19,6 +19,8 @@ public class SectionRepositoryTest {
     @Autowired
     private SectionRepository repository;
 
+    private Section section1;
+
     // Это заодно и тестирование метода save()
     @BeforeEach
     public void setup() {
@@ -26,15 +28,13 @@ public class SectionRepositoryTest {
         repository.deleteAll();
 
         // Создание тестовых данных
-        Section section1 = new Section();
-        section1.setName("Плавание");
+        section1 = new Section("Плавание");
         section1.setPlace("Бассейн НГУ");
         section1.setSchedule("расписание");
         section1.setTeacher("Тимофеев С. И.");
         repository.save(section1);
 
-        Section section2 = new Section();
-        section2.setName("Настольный теннис");
+        Section section2 = new Section("Настольный теннис");
         section2.setPlace("СКЦ (цокольный этаж, Пирогова, 12/1)");
         section2.setSchedule("расписание");
         section2.setTeacher("Троценко Д.А.");
@@ -43,23 +43,18 @@ public class SectionRepositoryTest {
 
     @Test
     public void testFindByName() {
-        Section section = repository.findByName("Плавание");
-        assertNotNull(section);
-        assertEquals("Бассейн НГУ", section.getPlace());
-        assertEquals("Тимофеев С. И.", section.getTeacher());
+        Section section = repository.findByName(section1.getName());
+        assertEquals(section, section1);
     }
 
     @Test
     public void testFindById() {
-        Section sectionByName = repository.findByName("Плавание");
+        Section sectionByName = repository.findByName(section1.getName());
         assertNotNull(sectionByName);
         Integer id = sectionByName.getId();
         Optional<Section> sectionById = repository.findById(id);
         assert (sectionById.isPresent());
-        assertEquals(sectionByName.getName(), sectionById.get().getName());
-        assertEquals(sectionByName.getId(), sectionById.get().getId());
-        assertEquals(sectionByName.getPlace(), sectionById.get().getPlace());
-        assertEquals(sectionByName.getSchedule(), sectionById.get().getSchedule());
+        assertEquals(sectionByName, sectionById.get());
     }
 
     @Test
