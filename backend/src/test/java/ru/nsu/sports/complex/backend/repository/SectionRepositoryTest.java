@@ -60,7 +60,7 @@ class SectionRepositoryTest {
     @Test
     void testFindAll() {
         List<Section> sections = repository.findAll();
-        assertEquals(sections.size(), 2);
+        assertEquals(2, sections.size());
     }
 
     @Test
@@ -70,14 +70,14 @@ class SectionRepositoryTest {
         Section section = sections.get(0);
         repository.delete(section);
         assertNull(repository.findByName(section.getName()));
-        assertEquals(repository.findAll().size(), count - 1);
+        assertEquals(count - 1, repository.findAll().size());
     }
 
     @Test
     void testDeleteAll() {
         int count = repository.findAll().size();
-        assertNotEquals(count, 0);
+        assertNotEquals(0, count);
         repository.deleteAll();
-        assertEquals(repository.findAll().size(), 0);
+        assertEquals(0, repository.findAll().size());
     }
 }

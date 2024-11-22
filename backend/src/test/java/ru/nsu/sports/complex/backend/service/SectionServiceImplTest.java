@@ -87,7 +87,7 @@ class SectionServiceImplTest {
     void testFindAllSections() {
         when(repository.findAll()).thenReturn(List.of(section1));
 
-        assertEquals(service.findAllSections().size(), 1);
+        assertEquals(1, service.findAllSections().size());
         verify(repository, times(1)).findAll();
     }
 
@@ -121,7 +121,8 @@ class SectionServiceImplTest {
     void testUpdateSection_NotFound() {
         when(repository.findById(section1.getId())).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> service.updateSection(newSection, section1.getId()));
+        Integer sectionId = section1.getId();
+        assertThrows(NoSuchElementException.class, () -> service.updateSection(newSection, sectionId));
 
         verify(repository, times(1)).findById(section1.getId());
         verify(repository, never()).save(any());
