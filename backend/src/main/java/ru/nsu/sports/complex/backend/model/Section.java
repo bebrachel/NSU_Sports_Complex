@@ -46,4 +46,9 @@ public class Section {
         }
         return super.equals(obj);
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
