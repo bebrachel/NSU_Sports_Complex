@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.nsu.sports.complex.backend.converter.SectionConverter;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,14 +122,82 @@ class SectionControllerTest {
         verify(service, times(1)).findAllSections();
     }
 
-    //TODO
     @Test
-    void testCreateSection_Success() {
+    void testCreateSection_Success() throws Exception {
+        String name = "Футбол", schedule = "Пн. 19:00-20:30", place = "стадион, малый игровой зал", teacher = "Мезенцев С. В.";
+        Section section = new Section(name);
+        section.setTeacher(teacher);
+        section.setPlace(place);
+        section.setSchedule(schedule);
+        SectionConverter sectionConverter = new SectionConverter();
+        SectionDTO sectionDTO = sectionConverter.sectionToDTO(section);
+        Section sectionWithId = sectionConverter.DTOtoSection(sectionDTO);
+        Assertions.assertNotNull(sectionWithId);
+        Assertions.assertNotNull(sectionDTO);
+        sectionWithId.setId(3);
+
+        when(converter.DTOtoSection(any(SectionDTO.class))).thenReturn(section);
+        when(service.createSection(section)).thenReturn(sectionWithId);
+        when(converter.sectionToDTO(sectionWithId)).thenReturn(sectionDTO);
+
+        mockMvc.perform(post("/api/sections")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Футбол",
+                                  "teacher": "Мезенцев С. В.",
+                                  "place": "стадион, малый игровой зал",
+                                  "schedule": "Пн. 19:00-20:30"
+                                }
+                                """))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.teacher").value(teacher))
+                .andExpect(jsonPath("$.place").value(place))
+                .andExpect(jsonPath("$.schedule").value(schedule));
+
+        verify(service, times(1)).createSection(section);
     }
 
-    //TODO
     @Test
-    void testUpdateSection_Success() {
+    void testUpdateSection_Name() throws Exception {
+        section1.setName("Баскетбол (мужской)");
+        when(service.updateSection(any(Section.class), eq(1))).thenReturn(section1);
+
+        mockMvc.perform(put("/api/sections/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Баскетбол (мужской)"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Баскетбол (мужской)"));
+
+        verify(service, times(1)).updateSection(any(), eq(1));
+    }
+
+    @Test
+    void testUpdateSection_PlaceTeacher() throws Exception {
+        String teacher = "Шумейко Д.В.", place = "Большой игровой зал";
+        section1.setTeacher(teacher);
+        section1.setPlace(place);
+        when(service.updateSection(any(Section.class), eq(1))).thenReturn(section1);
+
+        mockMvc.perform(put("/api/sections/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "place": "Большой игровой зал",
+                                  "teacher": "Шумейко Д.В."
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teacher").value(teacher))
+                .andExpect(jsonPath("$.place").value(place));
+
+        verify(service, times(1)).updateSection(any(), eq(1));
     }
 
     @Test
