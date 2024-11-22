@@ -78,7 +78,6 @@ class SectionControllerTest {
         when(service.findById(id)).thenReturn(section1);
 
         mockMvc.perform(get("/api/sections/" + id))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(section1DTO.getName()))
                 .andExpect(jsonPath("$.teacher").value(section1DTO.getTeacher()))
