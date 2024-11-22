@@ -112,5 +112,11 @@ jobs:
         working-directory: ./backend
 
       - name: Test with Gradle Wrapper
-        run: ./gradlew test
+        env:
+          SPRING_DATASOURCE_USERNAME: ${{secrets.SPRING_DATASOURCE_USERNAME}}
+          SPRING_DATASOURCE_PASSWORD: ${{secrets.SPRING_DATASOURCE_PASSWORD}}
+          SPRING_DATASOURCE_URL: ${{secrets.SPRING_DATASOURCE_URL}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew clean test --info jacocoTestReport sonar
         working-directory: ./backend
