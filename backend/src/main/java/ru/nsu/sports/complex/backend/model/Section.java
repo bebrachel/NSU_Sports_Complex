@@ -37,4 +37,9 @@ public class Section {
                 "place " + place + " " +
                 schedule;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
