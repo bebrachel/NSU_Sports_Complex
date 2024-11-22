@@ -86,7 +86,8 @@ public class SectionController {
     public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
         try {
             Section newSection = service.createSection(converter.DTOtoSection(sectionDTO));
-            return new ResponseEntity<>(converter.sectionToDTO(newSection), HttpStatus.OK);
+            SectionDTO resultSectionDTO = converter.sectionToDTO(newSection);
+            return new ResponseEntity<>(resultSectionDTO, HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
