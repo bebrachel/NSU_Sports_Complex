@@ -35,11 +35,10 @@ public class SectionController {
     @GetMapping("/{id}")
     public ResponseEntity<SectionDTO> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
-        if (section != null) {
-            return new ResponseEntity<>(SectionConverter.sectionToDTO(section), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (section == null) {
+            throw new NoSuchElementException("Section with ID " + id + " does not exist");
         }
+        return new ResponseEntity<>(SectionConverter.sectionToDTO(section), HttpStatus.OK);
     }
 
     @Operation(summary = "Получить информацию о секции по названию.")
