@@ -102,7 +102,7 @@ class SectionControllerTest {
         when(service.findById(id)).thenReturn(null);
 
         mockMvc.perform(get("/api/sections/" + id))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
         verify(service, times(1)).findById(id);
     }
 
@@ -127,7 +127,7 @@ class SectionControllerTest {
         when(service.findByName(name)).thenReturn(null);
 
         mockMvc.perform(get("/api/sections/name/" + name))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
         verify(service, times(1)).findByName(name);
     }
 
