@@ -51,11 +51,10 @@ public class SectionController {
     @GetMapping("/name/{name}")
     public ResponseEntity<Section> findByName(@PathVariable String name) {
         Section section = service.findByName(name);
-        if (section != null) {
-            return new ResponseEntity<>(section, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (section == null) {
+            throw new NoSuchElementException("Section with name " + name + " does not exist");
         }
+        return new ResponseEntity<>(section, HttpStatus.OK);
     }
 
     @Operation(summary = "Получить список созданных секций.")
