@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +54,7 @@ public class SectionController {
     public ResponseEntity<Section> findByName(@PathVariable String name) {
         Section section = service.findByName(name);
         if (section == null) {
-            throw new NoSuchElementException("Section with name " + name + " does not exist");
+            throw new NoSuchElementException("Section with name '" + name + "' does not exist");
         }
         return new ResponseEntity<>(section, HttpStatus.OK);
     }
@@ -81,14 +81,12 @@ public class SectionController {
             })
     })
     @PostMapping
-    public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
-        try {
-            Section newSection = service.createSection(converter.DTOtoSection(sectionDTO));
-            SectionDTO resultSectionDTO = converter.sectionToDTO(newSection);
-            return new ResponseEntity<>(resultSectionDTO, HttpStatus.OK);
-        } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<SectionDTO> createSection(@Valid @RequestBody SectionDTO sectionDTO) {
+        Section newSection = converter.DTOtoSection(sectionDTO);
+        newSection = service.createSection(newSection);
+        SectionDTO resultSectionDTO = converter.sectionToDTO(newSection);
+        return new ResponseEntity<>(resultSectionDTO, HttpStatus.OK);
+
     }
 
     @Operation(summary = "Обновить поля секции.")
@@ -99,44 +97,43 @@ public class SectionController {
             })
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Section> updateSection(@PathVariable Integer id, @RequestBody Section section) {
-        try {
-            Section updatedSection = service.updateSection(section, id);
-            return new ResponseEntity<>(updatedSection, HttpStatus.OK);
-        } catch (NoSuchElementException | DataIntegrityViolationException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Section> updateSection(@PathVariable Integer id, @Valid @RequestBody Section section) {
+        Section updatedSection = service.updateSection(section, id);
+        return new ResponseEntity<>(updatedSection, HttpStatus.OK);
     }
 
     @Operation(summary = "Удалить секцию по id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema())
+                    @Schema(implementation = String.class))
             })
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSectionById(@PathVariable Integer id) {
-        if (service.deleteSectionById(id)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> deleteSectionById(@PathVariable Integer id) {
+        boolean isDeleted = service.deleteSectionById(id);
+        if (isDeleted) {
+            return new ResponseEntity<>("Section deleted successfully", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new NoSuchElementException("Section with id '" + id + "' does not exist");
         }
     }
+
 
     @Operation(summary = "Удалить секцию по названию.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema())
+                    @Schema(implementation = String.class))
             })
     })
     @DeleteMapping("/name/{name}")
-    public ResponseEntity<Void> deleteSectionByName(@PathVariable String name) {
-        if (service.deleteSectionByName(name)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> deleteSectionByName(@PathVariable String name) {
+        boolean isDeleted = service.deleteSectionByName(name);
+        if (isDeleted) {
+            return new ResponseEntity<>("Section deleted successfully", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new NoSuchElementException("Section with name '" + name + "' does not exist");
         }
     }
 }

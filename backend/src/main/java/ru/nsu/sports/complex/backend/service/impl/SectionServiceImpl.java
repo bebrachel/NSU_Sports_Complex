@@ -2,6 +2,7 @@ package ru.nsu.sports.complex.backend.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.nsu.sports.complex.backend.model.Section;
 import ru.nsu.sports.complex.backend.repository.SectionRepository;
@@ -35,6 +36,9 @@ public class SectionServiceImpl implements SectionService {
     @Transactional
     @Override
     public Section createSection(Section section) {
+        if (repository.findByName(section.getName()) != null) {
+            throw new IllegalArgumentException("Section with name '" + section.getName() + "' already exists");
+        }
         return repository.save(section);
     }
 
@@ -61,21 +65,32 @@ public class SectionServiceImpl implements SectionService {
     @Override
     public boolean deleteSectionById(Integer id) {
         Section section = repository.findById(id).orElse(null);
+        System.out.println(section);
         if (section == null) {
             return false;
         }
-        repository.delete(section);
-        return true;
+        try {
+            repository.delete(section);
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Cannot delete section due to related data", e);
+        }
     }
+
 
     @Transactional
     @Override
     public boolean deleteSectionByName(String name) {
         Section section = repository.findByName(name);
+        System.out.println(section);
         if (section == null) {
             return false;
         }
-        repository.delete(section);
-        return true;
+        try {
+            repository.delete(section);
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Cannot delete section due to related data", e);
+        }
     }
 }

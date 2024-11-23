@@ -7,6 +7,9 @@ import ru.nsu.sports.complex.backend.model.Section;
 @Component
 public class SectionConverter {
     public Section DTOtoSection(SectionDTO sectionDTO) {
+        if (sectionDTO.getName() == null || sectionDTO.getName().isBlank()) {
+            throw new IllegalArgumentException("Name must not be null or blank");
+        }
         Section section = new Section(sectionDTO.getName());
         section.setTeacher(sectionDTO.getTeacher());
         section.setPlace(sectionDTO.getPlace());
