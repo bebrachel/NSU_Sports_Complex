@@ -22,9 +22,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SectionController.class)
 class SectionControllerTest {
@@ -240,12 +238,30 @@ class SectionControllerTest {
     }
 
     @Test
-    void testDeleteSectionById_Failure() throws Exception {
+    void testDeleteSectionById_NotFound() throws Exception {
         when(service.deleteSectionById(1)).thenReturn(false);
 
         mockMvc.perform(delete("/api/sections/1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("{\"error\":\"Section with id '1' does not exist\"}"));
+    }
 
-        verify(service, times(1)).deleteSectionById(1);
+    @Test
+    void testDeleteSectionByName_Success() throws Exception {
+        when(service.deleteSectionByName("name")).thenReturn(true);
+
+        mockMvc.perform(delete("/api/sections/name/name"))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).deleteSectionByName("name");
+    }
+
+    @Test
+    void testDeleteSectionByName_NotFound() throws Exception {
+        when(service.deleteSectionByName("NonExistingSection")).thenReturn(false);
+
+        mockMvc.perform(delete("/api/sections/name/NonExistingSection"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("{\"error\":\"Section with name 'NonExistingSection' does not exist\"}"));
     }
 }

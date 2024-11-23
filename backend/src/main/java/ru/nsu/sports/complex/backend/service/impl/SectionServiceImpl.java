@@ -42,6 +42,9 @@ public class SectionServiceImpl implements SectionService {
     @Transactional
     @Override
     public Section createSection(Section section) {
+        if (sectionRepository.findByName(section.getName()) != null) {
+            throw new IllegalArgumentException("Section with name '" + section.getName() + "' already exists");
+        }
         for (TimeSlot timeSlot : section.getSchedule().getTimeSlots()) {
             timeSlot.setSchedule(section.getSchedule());
         }
