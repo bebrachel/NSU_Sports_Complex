@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SectionDTO {
-    private String name;
-    private String teacher;
-    private String place;
-    private ScheduleDTO schedule;
+public class TimeSlotDTO {
+    private String dayOfWeek;
+    private String startTime;
+    private String endTime;
 }
