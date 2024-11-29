@@ -1,25 +1,28 @@
 package ru.nsu.sports.complex.backend.converter;
 
-import org.springframework.stereotype.Component;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
 import ru.nsu.sports.complex.backend.model.Section;
 
-@Component
 public class SectionConverter {
-    public Section DTOtoSection(SectionDTO sectionDTO) {
-        Section section = new Section(sectionDTO.getName());
+    private SectionConverter() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static Section dtoToSection(SectionDTO sectionDTO) {
+        Section section = new Section();
+        section.setName(sectionDTO.getName());
         section.setTeacher(sectionDTO.getTeacher());
         section.setPlace(sectionDTO.getPlace());
-        section.setSchedule(sectionDTO.getSchedule());
+        section.setSchedule(ScheduleConverter.dtoToSchedule(sectionDTO.getSchedule()));
         return section;
     }
 
-    public SectionDTO sectionToDTO(Section section) {
+    public static SectionDTO sectionToDTO(Section section) {
         SectionDTO sectionDTO = new SectionDTO();
         sectionDTO.setName(section.getName());
         sectionDTO.setTeacher(section.getTeacher());
         sectionDTO.setPlace(section.getPlace());
-        sectionDTO.setSchedule(section.getSchedule());
+        sectionDTO.setSchedule(ScheduleConverter.scheduleToDTO(section.getSchedule()));
         return sectionDTO;
     }
 }
