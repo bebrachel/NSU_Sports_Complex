@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SectionDTO {
-    private String name;
-    private String teacher;
-    private String place;
-    private ScheduleDTO schedule;
+public class ScheduleDTO {
+    private List<TimeSlotDTO> timeSlots;
 }

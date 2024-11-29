@@ -9,10 +9,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import ru.nsu.sports.complex.backend.converter.SectionConverter;
+import ru.nsu.sports.complex.backend.dto.SectionDTO;
+import ru.nsu.sports.complex.backend.model.Schedule;
 import ru.nsu.sports.complex.backend.model.Section;
+import ru.nsu.sports.complex.backend.model.TimeSlot;
 import ru.nsu.sports.complex.backend.repository.SectionRepository;
 import ru.nsu.sports.complex.backend.service.impl.SectionServiceImpl;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -35,14 +41,41 @@ class SectionServiceImplTest {
         section1 = new Section("Плавание");
         section1.setId(1);
         section1.setPlace("Бассейн НГУ");
-        section1.setSchedule("расписание");
+        Schedule schedule1 = new Schedule();
+        TimeSlot timeSlot1 = new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+        TimeSlot timeSlot2 = new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+        schedule1.setTimeSlots(List.of(timeSlot1, timeSlot2));
+        section1.setSchedule(schedule1);
         section1.setTeacher("Тимофеев С. И.");
 
-        newSection = new Section("New section");
-        newSection.setPlace("New place");
-        newSection.setTeacher("New teacher");
-        newSection.setSchedule("New schedule");
+        newSection = new Section("Настольный теннис");
         newSection.setId(2);
+        newSection.setPlace("СКЦ (цокольный этаж, Пирогова, 12/1)");
+        Schedule schedule2 = new Schedule();
+        TimeSlot timeSlot3 = new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+        TimeSlot timeSlot4 = new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
+        schedule2.setTimeSlots(List.of(timeSlot3, timeSlot4));
+        newSection.setSchedule(schedule2);
+        newSection.setTeacher("Троценко Д.А.");
+    }
+
+    private void equalsSections(Section section1, Section section2) {
+        assertEquals(section1.getId(), section2.getId());
+        assertEquals(section1.getName(), section2.getName());
+        assertEquals(section1.getTeacher(), section2.getTeacher());
+        assertEquals(section1.getPlace(), section2.getPlace());
+
+        assertEquals(section1.getSchedule().getId(), section2.getSchedule().getId());
+        var timeSlots1 = section1.getSchedule().getTimeSlots();
+        var timeSlots2 = section2.getSchedule().getTimeSlots();
+        for (int i = 0; i < timeSlots1.size(); i++) {
+            var ts1 = timeSlots1.get(i);
+            var ts2 = timeSlots2.get(i);
+            assertEquals(ts1.getId(), ts2.getId());
+            assertEquals(ts1.getStartTime(), ts2.getStartTime());
+            assertEquals(ts1.getEndTime(), ts2.getEndTime());
+            assertEquals(ts1.getDayOfWeek(), ts2.getDayOfWeek());
+        }
     }
 
     @Test
@@ -50,7 +83,7 @@ class SectionServiceImplTest {
         when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
 
         Section result = service.findById(section1.getId());
-        assertEquals(result, section1);
+        equalsSections(result, section1);
         verify(repository, times(1)).findById(section1.getId());
     }
 
@@ -69,7 +102,7 @@ class SectionServiceImplTest {
         when(repository.findByName(section1.getName())).thenReturn(section1);
 
         Section result = service.findByName(section1.getName());
-        assertEquals(result, section1);
+        equalsSections(result, section1);
         verify(repository, times(1)).findByName(section1.getName());
     }
 
@@ -93,28 +126,29 @@ class SectionServiceImplTest {
 
     @Test
     void testCreateSection() {
-        when(repository.save(newSection)).thenReturn(newSection);
+        SectionDTO sectionDTO = SectionConverter.sectionToDTO(newSection);
+        when(repository.save(any())).thenReturn(newSection);
 
-        Section section = service.createSection(newSection);
-        assertEquals(section, newSection);
-        verify(repository, times(1)).save(newSection);
+        Section result = service.createSection(sectionDTO);
+        equalsSections(result, newSection);
+        verify(repository, times(1)).save(any());
     }
 
     @Test
     void testUpdateSection_Success() {
         when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
-        when(repository.save(section1)).thenReturn(section1);
+        when(repository.save(any())).thenReturn(section1);
 
-        Section updatedSection = service.updateSection(newSection, section1.getId());
+        Section updatedSection = service.updateSection(SectionConverter.sectionToDTO(newSection), section1.getId());
 
         assertNotNull(updatedSection);
         assertEquals(updatedSection.getName(), newSection.getName());
         assertEquals(updatedSection.getTeacher(), newSection.getTeacher());
-        assertEquals(updatedSection.getSchedule(), newSection.getSchedule());
+        assertEquals(updatedSection.getSchedule().getTimeSlots().size(), newSection.getSchedule().getTimeSlots().size());
         assertEquals(updatedSection.getPlace(), newSection.getPlace());
 
         verify(repository, times(1)).findById(section1.getId());
-        verify(repository, times(1)).save(section1);
+        verify(repository, times(1)).save(any());
     }
 
     @Test
@@ -122,7 +156,8 @@ class SectionServiceImplTest {
         when(repository.findById(section1.getId())).thenReturn(Optional.empty());
 
         Integer sectionId = section1.getId();
-        assertThrows(NoSuchElementException.class, () -> service.updateSection(newSection, sectionId));
+        SectionDTO newSectionDTO = SectionConverter.sectionToDTO(newSection);
+        assertThrows(NoSuchElementException.class, () -> service.updateSection(newSectionDTO, sectionId));
 
         verify(repository, times(1)).findById(section1.getId());
         verify(repository, never()).save(any());

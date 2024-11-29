@@ -18,14 +18,12 @@ import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/sections")
 @AllArgsConstructor
 public class SectionController {
     private final SectionService service;
-    private final SectionConverter converter;
 
     @Operation(summary = "Получить информацию о секции по id.")
     @ApiResponses(value = {
@@ -38,7 +36,7 @@ public class SectionController {
     public ResponseEntity<SectionDTO> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
         if (section != null) {
-            return new ResponseEntity<>(converter.sectionToDTO(section), HttpStatus.OK);
+            return new ResponseEntity<>(SectionConverter.sectionToDTO(section), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -71,8 +69,8 @@ public class SectionController {
     @GetMapping
     public List<SectionDTO> findAllSections() {
         return service.findAllSections().stream()
-                .map(converter::sectionToDTO)
-                .collect(Collectors.toList());
+                .map(SectionConverter::sectionToDTO)
+                .toList();
     }
 
     @Operation(summary = "Создать новую секцию.")
@@ -85,9 +83,8 @@ public class SectionController {
     @PostMapping
     public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
         try {
-            Section newSection = service.createSection(converter.DTOtoSection(sectionDTO));
-            SectionDTO resultSectionDTO = converter.sectionToDTO(newSection);
-            return new ResponseEntity<>(resultSectionDTO, HttpStatus.OK);
+            Section newSection = service.createSection(sectionDTO);
+            return new ResponseEntity<>(SectionConverter.sectionToDTO(newSection), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -97,14 +94,14 @@ public class SectionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Обновленная секция.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = Section.class))
+                    @Schema(implementation = SectionDTO.class))
             })
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Section> updateSection(@PathVariable Integer id, @RequestBody Section section) {
+    public ResponseEntity<SectionDTO> updateSection(@PathVariable Integer id, @RequestBody SectionDTO sectionDTO) {
         try {
-            Section updatedSection = service.updateSection(section, id);
-            return new ResponseEntity<>(updatedSection, HttpStatus.OK);
+            Section updatedSection = service.updateSection(sectionDTO, id);
+            return new ResponseEntity<>(SectionConverter.sectionToDTO(updatedSection), HttpStatus.OK);
         } catch (NoSuchElementException | DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
