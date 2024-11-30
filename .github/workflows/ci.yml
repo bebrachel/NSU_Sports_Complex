@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" , "nocarend/scrum-42" ]
   pull_request:
     types: [opened, synchronize, reopened]
 
