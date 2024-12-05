@@ -28,7 +28,9 @@ public class TimeSlotConverter {
             timeSlot.setStartTime(LocalTime.parse(timeSlotDTO.getStartTime(), formatter));
             timeSlot.setEndTime(LocalTime.parse(timeSlotDTO.getEndTime(), formatter));
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid time format. Expected HH:mm for startTime/endTime");
+            throw new IllegalArgumentException("Invalid time format: " +
+                    timeSlotDTO.getStartTime() + "-" + timeSlotDTO.getEndTime() + ". " +
+                    "Expected HH:mm for startTime/endTime");
         }
         return timeSlot;
     }

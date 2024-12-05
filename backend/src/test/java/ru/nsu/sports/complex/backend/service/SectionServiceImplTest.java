@@ -19,6 +19,7 @@ import ru.nsu.sports.complex.backend.service.impl.SectionServiceImpl;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -42,9 +43,10 @@ class SectionServiceImplTest {
         section1.setId(1);
         section1.setPlace("Бассейн НГУ");
         Schedule schedule1 = new Schedule();
-        TimeSlot timeSlot1 = new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-        TimeSlot timeSlot2 = new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-        schedule1.setTimeSlots(List.of(timeSlot1, timeSlot2));
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        timeSlots.add(new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        timeSlots.add(new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        schedule1.setTimeSlots(timeSlots);
         section1.setSchedule(schedule1);
         section1.setTeacher("Тимофеев С. И.");
 
@@ -52,9 +54,10 @@ class SectionServiceImplTest {
         newSection.setId(2);
         newSection.setPlace("СКЦ (цокольный этаж, Пирогова, 12/1)");
         Schedule schedule2 = new Schedule();
-        TimeSlot timeSlot3 = new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-        TimeSlot timeSlot4 = new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0));
-        schedule2.setTimeSlots(List.of(timeSlot3, timeSlot4));
+        List<TimeSlot> timeSlots2 = new ArrayList<>();
+        timeSlots2.add(new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        timeSlots2.add(new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        schedule2.setTimeSlots(timeSlots2);
         newSection.setSchedule(schedule2);
         newSection.setTeacher("Троценко Д.А.");
     }
@@ -126,10 +129,9 @@ class SectionServiceImplTest {
 
     @Test
     void testCreateSection() {
-        SectionDTO sectionDTO = SectionConverter.sectionToDTO(newSection);
         when(repository.save(any())).thenReturn(newSection);
 
-        Section result = service.createSection(sectionDTO);
+        Section result = service.createSection(newSection);
         equalsSections(result, newSection);
         verify(repository, times(1)).save(any());
     }
@@ -139,7 +141,8 @@ class SectionServiceImplTest {
         when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
         when(repository.save(any())).thenReturn(section1);
 
-        Section updatedSection = service.updateSection(SectionConverter.sectionToDTO(newSection), section1.getId());
+        SectionDTO newSectionDTO = SectionConverter.sectionToDTO(newSection);
+        Section updatedSection = service.updateSection(section1.getId(), newSectionDTO);
 
         assertNotNull(updatedSection);
         assertEquals(updatedSection.getName(), newSection.getName());
@@ -157,7 +160,7 @@ class SectionServiceImplTest {
 
         Integer sectionId = section1.getId();
         SectionDTO newSectionDTO = SectionConverter.sectionToDTO(newSection);
-        assertThrows(NoSuchElementException.class, () -> service.updateSection(newSectionDTO, sectionId));
+        assertThrows(NoSuchElementException.class, () -> service.updateSection(sectionId, newSectionDTO));
 
         verify(repository, times(1)).findById(section1.getId());
         verify(repository, never()).save(any());
