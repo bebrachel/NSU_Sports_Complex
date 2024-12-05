@@ -43,6 +43,7 @@ public class TimeSlot {
     public String toString() {
         return "TimeSlot: id " + id + " " +
                 "dayOfWeek " + dayOfWeek + " " +
-                startTime + ":" + endTime;
+                startTime + ":" + endTime + " " +
+                "scheduleId " + schedule.getId();
     }
 }
