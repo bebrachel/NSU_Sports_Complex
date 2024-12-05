@@ -13,9 +13,9 @@ public interface SectionService {
 
     List<Section> findAllSections();
 
-    Section createSection(SectionDTO sectionDTO);
+    Section createSection(Section section);
 
-    Section updateSection(SectionDTO sectionDTO, Integer id);
+    Section updateSection(Integer id, SectionDTO sectionDTO);
 
     boolean deleteSectionById(Integer id);
 
