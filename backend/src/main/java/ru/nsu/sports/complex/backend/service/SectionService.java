@@ -10,8 +10,8 @@ public interface SectionService {
     Section findById(Integer id);
     Section findByName(String name);
     List<Section> findAllSections();
-    Section createSection(SectionDTO sectionDTO);
-    Section updateSection(SectionDTO sectionDTO, Integer id);
+    Section createSection(Section section);
+    Section updateSection(Integer id, SectionDTO sectionDTO);
     boolean deleteSectionById(Integer id);
     boolean deleteSectionByName(String name);
 }

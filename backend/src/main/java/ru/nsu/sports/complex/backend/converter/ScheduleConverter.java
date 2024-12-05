@@ -3,6 +3,9 @@ package ru.nsu.sports.complex.backend.converter;
 import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
 import ru.nsu.sports.complex.backend.model.Schedule;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class ScheduleConverter {
     private ScheduleConverter() {
         throw new IllegalStateException("Utility class");
@@ -13,7 +16,7 @@ public class ScheduleConverter {
         schedule.setTimeSlots(
                 scheduleDTO.getTimeSlots().stream()
                         .map(TimeSlotConverter::dtoToTimeSlot)
-                        .toList());
+                        .collect(Collectors.toCollection(ArrayList::new)));
         return schedule;
     }
 

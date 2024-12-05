@@ -78,9 +78,13 @@ public class SectionController {
             })})
     @PostMapping
     public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
+        if (sectionDTO.getName().isBlank()) {
+            throw new IllegalArgumentException("Section's name must not be blank!");
+        }
         try {
-            Section newSection = service.createSection(sectionDTO);
-            return new ResponseEntity<>(SectionConverter.sectionToDTO(newSection), HttpStatus.OK);
+            Section newSection = SectionConverter.dtoToSection(sectionDTO);
+            Section createdSection = service.createSection(newSection);
+            return new ResponseEntity<>(SectionConverter.sectionToDTO(createdSection), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -96,7 +100,7 @@ public class SectionController {
     @PutMapping("/{id}")
     public ResponseEntity<SectionDTO> updateSection(@PathVariable Integer id, @RequestBody SectionDTO sectionDTO) {
         try {
-            Section updatedSection = service.updateSection(sectionDTO, id);
+            Section updatedSection = service.updateSection(id, sectionDTO);
             return new ResponseEntity<>(SectionConverter.sectionToDTO(updatedSection), HttpStatus.OK);
         } catch (NoSuchElementException | DataIntegrityViolationException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
