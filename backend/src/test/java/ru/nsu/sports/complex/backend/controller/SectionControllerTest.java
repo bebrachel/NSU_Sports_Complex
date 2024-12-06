@@ -6,13 +6,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.nsu.sports.complex.backend.converter.SectionConverter;
+import ru.nsu.sports.complex.backend.converter.ScheduleConverter;
+import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
+import ru.nsu.sports.complex.backend.model.Schedule;
 import ru.nsu.sports.complex.backend.model.Section;
+import ru.nsu.sports.complex.backend.model.TimeSlot;
 import ru.nsu.sports.complex.backend.service.SectionService;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,9 +35,6 @@ class SectionControllerTest {
     @MockBean
     private SectionService service;
 
-    @MockBean
-    private SectionConverter converter;
-
     private Section section1;
     private SectionDTO section1DTO;
     private Section section2;
@@ -42,32 +46,53 @@ class SectionControllerTest {
         section1 = new Section("Плавание");
         section1.setId(1);
         section1.setPlace("Бассейн НГУ");
-        section1.setSchedule("расписание");
+        Schedule schedule1 = new Schedule();
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        timeSlots.add(new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        timeSlots.add(new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        schedule1.setTimeSlots(timeSlots);
+        section1.setSchedule(schedule1);
         section1.setTeacher("Тимофеев С. И.");
 
-        section1DTO = new SectionDTO(section1.getName(), section1.getTeacher(), section1.getPlace(), section1.getSchedule());
+        ScheduleDTO schedule1DTO = ScheduleConverter.scheduleToDTO(section1.getSchedule());
+        section1DTO = new SectionDTO(section1.getName(), section1.getTeacher(), section1.getPlace(), schedule1DTO);
 
         section2 = new Section("New section");
         section2.setPlace("New place");
+        Schedule schedule2 = new Schedule();
+        List<TimeSlot> timeSlots2 = new ArrayList<>();
+        timeSlots2.add(new TimeSlot(DayOfWeek.FRIDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        timeSlots2.add(new TimeSlot(DayOfWeek.WEDNESDAY, LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        schedule2.setTimeSlots(timeSlots2);
+        section2.setSchedule(schedule2);
         section2.setTeacher("New teacher");
-        section2.setSchedule("New schedule");
         section2.setId(2);
 
-        section2DTO = new SectionDTO(section2.getName(), section2.getTeacher(), section2.getPlace(), section2.getSchedule());
+        ScheduleDTO schedule2DTO = ScheduleConverter.scheduleToDTO(section2.getSchedule());
+        section2DTO = new SectionDTO(section2.getName(), section2.getTeacher(), section2.getPlace(), schedule2DTO);
     }
 
     @Test
     void testFindById_Success() throws Exception {
         int id = section1.getId();
         when(service.findById(id)).thenReturn(section1);
-        when(converter.sectionToDTO(section1)).thenReturn(section1DTO);
 
         mockMvc.perform(get("/api/sections/" + id))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(section1DTO.getName()))
                 .andExpect(jsonPath("$.teacher").value(section1DTO.getTeacher()))
                 .andExpect(jsonPath("$.place").value(section1DTO.getPlace()))
-                .andExpect(jsonPath("$.schedule").value(section1DTO.getSchedule()));
+                // Проверяем общее расписание
+                .andExpect(jsonPath("$.schedule.timeSlots", hasSize(2)))
+                // Проверяем первый слот времени
+                .andExpect(jsonPath("$.schedule.timeSlots[0].dayOfWeek").value("FRIDAY"))
+                .andExpect(jsonPath("$.schedule.timeSlots[0].startTime").value("18:00"))
+                .andExpect(jsonPath("$.schedule.timeSlots[0].endTime").value("19:00"))
+                // Проверяем второй слот времени
+                .andExpect(jsonPath("$.schedule.timeSlots[1].dayOfWeek").value("WEDNESDAY"))
+                .andExpect(jsonPath("$.schedule.timeSlots[1].startTime").value("18:00"))
+                .andExpect(jsonPath("$.schedule.timeSlots[1].endTime").value("19:00"));
 
         verify(service, times(1)).findById(id);
     }
@@ -86,14 +111,13 @@ class SectionControllerTest {
     void testFindByName_Success() throws Exception {
         String name = section1.getName();
         when(service.findByName(name)).thenReturn(section1);
-        when(converter.sectionToDTO(section1)).thenReturn(section1DTO);
 
         mockMvc.perform(get("/api/sections/name/" + name))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(section1DTO.getName()))
                 .andExpect(jsonPath("$.teacher").value(section1DTO.getTeacher()))
                 .andExpect(jsonPath("$.place").value(section1DTO.getPlace()))
-                .andExpect(jsonPath("$.schedule").value(section1DTO.getSchedule()));
+                .andExpect(jsonPath("$.schedule.timeSlots", hasSize(2)));
 
         verify(service, times(1)).findByName(name);
     }
@@ -111,8 +135,6 @@ class SectionControllerTest {
     @Test
     void testFindAllSections() throws Exception {
         when(service.findAllSections()).thenReturn(List.of(section1, section2));
-        when(converter.sectionToDTO(section1)).thenReturn(section1DTO);
-        when(converter.sectionToDTO(section2)).thenReturn(section2DTO);
 
         mockMvc.perform(get("/api/sections"))
                 .andExpect(status().isOk())
@@ -124,46 +146,53 @@ class SectionControllerTest {
 
     @Test
     void testCreateSection_Success() throws Exception {
-        String name = "Футбол", schedule = "Пн. 19:00-20:30", place = "стадион, малый игровой зал", teacher = "Мезенцев С. В.";
+        String name = "Футбол", place = "стадион, малый игровой зал", teacher = "Мезенцев С. В.";
+        Schedule schedule = new Schedule();
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        timeSlots.add(new TimeSlot(DayOfWeek.TUESDAY, LocalTime.of(19, 0), LocalTime.of(20, 0)));
+        schedule.setTimeSlots(timeSlots);
+
         Section section = new Section(name);
         section.setTeacher(teacher);
         section.setPlace(place);
         section.setSchedule(schedule);
-        SectionConverter sectionConverter = new SectionConverter();
-        SectionDTO sectionDTO = sectionConverter.sectionToDTO(section);
-        Section sectionWithId = sectionConverter.DTOtoSection(sectionDTO);
-        Assertions.assertNotNull(sectionWithId);
-        Assertions.assertNotNull(sectionDTO);
-        sectionWithId.setId(3);
 
-        when(converter.DTOtoSection(any(SectionDTO.class))).thenReturn(section);
-        when(service.createSection(section)).thenReturn(sectionWithId);
-        when(converter.sectionToDTO(sectionWithId)).thenReturn(sectionDTO);
+        when(service.createSection(any(Section.class))).thenReturn(section);
 
         mockMvc.perform(post("/api/sections")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "name": "Футбол",
-                                  "teacher": "Мезенцев С. В.",
-                                  "place": "стадион, малый игровой зал",
-                                  "schedule": "Пн. 19:00-20:30"
-                                }
+                                     "name": "Футбол",
+                                     "teacher": "Мезенцев С. В.",
+                                     "place": "стадион, малый игровой зал",
+                                     "schedule": {
+                                         "timeSlots": [
+                                             {
+                                                 "dayOfWeek": "TUESDAY",
+                                                 "startTime": "19:00",
+                                                 "endTime": "20:00"
+                                             }
+                                         ]
+                                     }
+                                 }
                                 """))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.teacher").value(teacher))
                 .andExpect(jsonPath("$.place").value(place))
-                .andExpect(jsonPath("$.schedule").value(schedule));
+                .andExpect(jsonPath("$.schedule.timeSlots", hasSize(1)))
+                .andExpect(jsonPath("$.schedule.timeSlots[0].dayOfWeek").value("TUESDAY"))
+                .andExpect(jsonPath("$.schedule.timeSlots[0].startTime").value("19:00"))
+                .andExpect(jsonPath("$.schedule.timeSlots[0].endTime").value("20:00"));
 
-        verify(service, times(1)).createSection(section);
+        verify(service, times(1)).createSection(any(Section.class));
     }
 
     @Test
     void testUpdateSection_Name() throws Exception {
         section1.setName("Баскетбол (мужской)");
-        when(service.updateSection(any(Section.class), eq(1))).thenReturn(section1);
+        when(service.updateSection(eq(1), any(SectionDTO.class))).thenReturn(section1);
 
         mockMvc.perform(put("/api/sections/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -175,7 +204,7 @@ class SectionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Баскетбол (мужской)"));
 
-        verify(service, times(1)).updateSection(any(), eq(1));
+        verify(service, times(1)).updateSection(eq(1), any(SectionDTO.class));
     }
 
     @Test
@@ -183,7 +212,7 @@ class SectionControllerTest {
         String teacher = "Шумейко Д.В.", place = "Большой игровой зал";
         section1.setTeacher(teacher);
         section1.setPlace(place);
-        when(service.updateSection(any(Section.class), eq(1))).thenReturn(section1);
+        when(service.updateSection(eq(1), any(SectionDTO.class))).thenReturn(section1);
 
         mockMvc.perform(put("/api/sections/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +226,7 @@ class SectionControllerTest {
                 .andExpect(jsonPath("$.teacher").value(teacher))
                 .andExpect(jsonPath("$.place").value(place));
 
-        verify(service, times(1)).updateSection(any(), eq(1));
+        verify(service, times(1)).updateSection(eq(1), any(SectionDTO.class));
     }
 
     @Test
