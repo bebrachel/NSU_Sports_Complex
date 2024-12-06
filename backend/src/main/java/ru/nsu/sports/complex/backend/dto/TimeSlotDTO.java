@@ -13,12 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TimeSlotDTO {
 
-    @NotNull(message = "Day of the week must not be null")
+    @NotNull()
     private String dayOfWeek;
 
-    @NotBlank(message = "Start time must not be blank")
+    @NotBlank()
     private String startTime;
 
-    @NotBlank(message = "End time must not be blank")
+    @NotBlank()
     private String endTime;
 }
