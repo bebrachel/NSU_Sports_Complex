@@ -8,10 +8,16 @@ import java.util.List;
 
 public interface SectionService {
     Section findById(Integer id);
+
     Section findByName(String name);
+
     List<Section> findAllSections();
+
     Section createSection(Section section);
+
     Section updateSection(Integer id, SectionDTO sectionDTO);
+
     boolean deleteSectionById(Integer id);
+
     boolean deleteSectionByName(String name);
 }
