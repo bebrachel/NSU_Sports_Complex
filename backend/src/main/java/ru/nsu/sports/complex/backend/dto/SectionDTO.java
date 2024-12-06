@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class SectionDTO {
 
-    @NotBlank(message = "Name must not be blank")
+    @NotBlank
     private String name;
 
     private String teacher;

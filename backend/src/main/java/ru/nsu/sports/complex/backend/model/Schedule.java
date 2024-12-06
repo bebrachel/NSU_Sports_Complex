@@ -21,14 +21,4 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<TimeSlot> timeSlots = new ArrayList<>();
-
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        for (TimeSlot ts : timeSlots) {
-            buffer.append(ts);
-        }
-        return "Schedule: id " + id + " " +
-                "TimeSlots " + buffer;
-    }
 }

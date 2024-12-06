@@ -13,12 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TimeSlotDTO {
 
-    @NotNull()
+    @NotNull
     private String dayOfWeek;
 
-    @NotBlank()
+    @NotBlank
     private String startTime;
 
-    @NotBlank()
+    @NotBlank
     private String endTime;
 }
