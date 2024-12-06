@@ -20,14 +20,14 @@ public class TimeSlotConverter {
         try {
             // Предполагается, что фронт отправляет день недели в виде DayOfWeek
             timeSlot.setDayOfWeek(DayOfWeek.valueOf(timeSlotDTO.getDayOfWeek()));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             throw new IllegalArgumentException("Invalid day of week: " + timeSlotDTO.getDayOfWeek());
         }
         try {
             // Думаю, что это тоже пусть фронт отрабатывает
             timeSlot.setStartTime(LocalTime.parse(timeSlotDTO.getStartTime(), formatter));
             timeSlot.setEndTime(LocalTime.parse(timeSlotDTO.getEndTime(), formatter));
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException | NullPointerException e) {
             throw new IllegalArgumentException("Invalid time format: " +
                     timeSlotDTO.getStartTime() + "-" + timeSlotDTO.getEndTime() + ". " +
                     "Expected HH:mm for startTime/endTime");
