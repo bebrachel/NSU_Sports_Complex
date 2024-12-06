@@ -3,6 +3,7 @@ package ru.nsu.sports.complex.backend.service;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -83,40 +84,42 @@ class SectionServiceImplTest {
 
     @Test
     void testFindById_Success() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.of(section1));
 
-        Section result = service.findById(section1.getId());
+        Section result = service.findById(id);
         equalsSections(result, section1);
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
     }
 
     @Test
     void testFindById_NotFound() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.empty());
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Section result = service.findById(section1.getId());
+        Assertions.assertThrows(NoSuchElementException.class, () -> service.findById(id));
 
-        assertNull(result);
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
     }
 
     @Test
     void testFindByName_Success() {
-        when(repository.findByName(section1.getName())).thenReturn(section1);
+        String name = section1.getName();
+        when(repository.findByName(name)).thenReturn(section1);
 
-        Section result = service.findByName(section1.getName());
+        Section result = service.findByName(name);
         equalsSections(result, section1);
-        verify(repository, times(1)).findByName(section1.getName());
+        verify(repository, times(1)).findByName(name);
     }
 
     @Test
     void testFindByName_NotFound() {
-        when(repository.findByName(section1.getName())).thenReturn(null);
+        String name = section1.getName();
+        when(repository.findByName(name)).thenThrow(NoSuchElementException.class);
 
-        Section result = service.findByName(section1.getName());
+        Assertions.assertThrows(NoSuchElementException.class, () -> service.findByName(name));
 
-        assertNull(result);
-        verify(repository, times(1)).findByName(section1.getName());
+        verify(repository, times(1)).findByName(name);
     }
 
     @Test
@@ -131,18 +134,19 @@ class SectionServiceImplTest {
     void testCreateSection() {
         when(repository.save(any())).thenReturn(newSection);
 
-        Section result = service.createSection(newSection);
+        Section result = service.createSection(SectionConverter.sectionToDTO(newSection));
         equalsSections(result, newSection);
         verify(repository, times(1)).save(any());
     }
 
     @Test
     void testUpdateSection_Success() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.of(section1));
         when(repository.save(any())).thenReturn(section1);
 
         SectionDTO newSectionDTO = SectionConverter.sectionToDTO(newSection);
-        Section updatedSection = service.updateSection(section1.getId(), newSectionDTO);
+        Section updatedSection = service.updateSection(id, newSectionDTO);
 
         assertNotNull(updatedSection);
         assertEquals(updatedSection.getName(), newSection.getName());
@@ -150,63 +154,63 @@ class SectionServiceImplTest {
         assertEquals(updatedSection.getSchedule().getTimeSlots().size(), newSection.getSchedule().getTimeSlots().size());
         assertEquals(updatedSection.getPlace(), newSection.getPlace());
 
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
         verify(repository, times(1)).save(any());
     }
 
     @Test
     void testUpdateSection_NotFound() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.empty());
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Integer sectionId = section1.getId();
         SectionDTO newSectionDTO = SectionConverter.sectionToDTO(newSection);
-        assertThrows(NoSuchElementException.class, () -> service.updateSection(sectionId, newSectionDTO));
+        assertThrows(NoSuchElementException.class, () -> service.updateSection(id, newSectionDTO));
 
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
         verify(repository, never()).save(any());
     }
 
     @Test
     void testDeleteSectionById_Success() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.of(section1));
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.of(section1));
 
-        boolean result = service.deleteSectionById(section1.getId());
+        assertTrue(service.deleteSectionById(id));
 
-        assertTrue(result);
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
         verify(repository, times(1)).delete(section1);
     }
 
     @Test
     void testDeleteSectionById_NotFound() {
-        when(repository.findById(section1.getId())).thenReturn(Optional.empty());
+        Integer id = section1.getId();
+        when(repository.findById(id)).thenReturn(Optional.empty());
 
-        boolean result = service.deleteSectionById(section1.getId());
+        assertFalse(service.deleteSectionById(id));
 
-        assertFalse(result);
-        verify(repository, times(1)).findById(section1.getId());
+        verify(repository, times(1)).findById(id);
         verify(repository, never()).delete(any(Section.class));
     }
 
     @Test
     void testDeleteSectionByName_Success() {
-        when(repository.findByName(section1.getName())).thenReturn(section1);
+        String name = section1.getName();
+        when(repository.findByName(name)).thenReturn(section1);
 
-        boolean result = service.deleteSectionByName(section1.getName());
+        assertTrue(service.deleteSectionByName(name));
 
-        assertTrue(result);
-        verify(repository, times(1)).findByName(section1.getName());
+        verify(repository, times(1)).findByName(name);
         verify(repository, times(1)).delete(section1);
     }
 
     @Test
     void testDeleteSectionByName_NotFound() {
-        when(repository.findByName(section1.getName())).thenReturn(null);
+        String name = section1.getName();
+        when(repository.findByName(name)).thenReturn(null);
 
-        boolean result = service.deleteSectionByName(section1.getName());
+        assertFalse(service.deleteSectionByName(name));
 
-        assertFalse(result);
-        verify(repository, times(1)).findByName(section1.getName());
+        verify(repository, times(1)).findByName(name);
         verify(repository, never()).delete(any(Section.class));
     }
 }

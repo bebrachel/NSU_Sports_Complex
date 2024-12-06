@@ -30,18 +30,4 @@ public class Section {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "schedule_id", referencedColumnName = "id")
     private Schedule schedule;
-
-    @Override
-    public String toString() {
-        return "Section: id " + id + " " +
-                "name " + name + " " +
-                "teacher " + teacher + " " +
-                "place " + place + " " +
-                schedule;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

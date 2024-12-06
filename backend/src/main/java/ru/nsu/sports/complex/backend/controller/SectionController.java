@@ -6,9 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +34,6 @@ public class SectionController {
     @GetMapping("/{id}")
     public ResponseEntity<SectionDTO> findById(@PathVariable Integer id) {
         Section section = service.findById(id);
-        if (section == null) {
-            throw new NoSuchElementException("Section with ID " + id + " does not exist");
-        }
         return new ResponseEntity<>(SectionConverter.sectionToDTO(section), HttpStatus.OK);
     }
 
@@ -52,9 +47,6 @@ public class SectionController {
     @GetMapping("/name/{name}")
     public ResponseEntity<Section> findByName(@PathVariable String name) {
         Section section = service.findByName(name);
-        if (section == null) {
-            throw new NoSuchElementException("Section with name '" + name + "' does not exist");
-        }
         return new ResponseEntity<>(section, HttpStatus.OK);
     }
 
@@ -80,17 +72,9 @@ public class SectionController {
             })
     })
     @PostMapping
-    public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO sectionDTO) {
-        if (sectionDTO.getName().isBlank()) {
-            throw new IllegalArgumentException("Section's name must not be blank!");
-        }
-        try {
-            Section newSection = SectionConverter.dtoToSection(sectionDTO);
-            Section createdSection = service.createSection(newSection);
-            return new ResponseEntity<>(SectionConverter.sectionToDTO(createdSection), HttpStatus.OK);
-        } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<SectionDTO> createSection(@RequestBody SectionDTO newSectionDTO) {
+        Section createdSection = service.createSection(newSectionDTO);
+        return new ResponseEntity<>(SectionConverter.sectionToDTO(createdSection), HttpStatus.OK);
     }
 
     @Operation(summary = "Обновить поля секции.")
@@ -101,13 +85,9 @@ public class SectionController {
             })
     })
     @PutMapping("/{id}")
-    public ResponseEntity<SectionDTO> updateSection(@PathVariable Integer id, @RequestBody SectionDTO sectionDTO) {
-        try {
-            Section updatedSection = service.updateSection(id, sectionDTO);
-            return new ResponseEntity<>(SectionConverter.sectionToDTO(updatedSection), HttpStatus.OK);
-        } catch (NoSuchElementException | DataIntegrityViolationException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<SectionDTO> updateSection(@PathVariable Integer id, @RequestBody SectionDTO updatedSectionDTO) {
+        Section updatedSection = service.updateSection(id, updatedSectionDTO);
+        return new ResponseEntity<>(SectionConverter.sectionToDTO(updatedSection), HttpStatus.OK);
     }
 
     @Operation(summary = "Удалить секцию по id.")

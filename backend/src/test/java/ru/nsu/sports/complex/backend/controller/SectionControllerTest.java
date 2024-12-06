@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -97,7 +98,7 @@ class SectionControllerTest {
     @Test
     void testFindById_NotFound() throws Exception {
         int id = section1.getId();
-        when(service.findById(id)).thenReturn(null);
+        when(service.findById(id)).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(get("/api/sections/" + id))
                 .andExpect(status().isNotFound());
@@ -122,7 +123,7 @@ class SectionControllerTest {
     @Test
     void testFindByName_NotFound() throws Exception {
         String name = section1.getName();
-        when(service.findByName(name)).thenReturn(null);
+        when(service.findByName(name)).thenThrow(NoSuchElementException.class);
 
         mockMvc.perform(get("/api/sections/name/" + name))
                 .andExpect(status().isNotFound());
@@ -154,7 +155,7 @@ class SectionControllerTest {
         section.setPlace(place);
         section.setSchedule(schedule);
 
-        when(service.createSection(any(Section.class))).thenReturn(section);
+        when(service.createSection(any(SectionDTO.class))).thenReturn(section);
 
         mockMvc.perform(post("/api/sections")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +184,7 @@ class SectionControllerTest {
                 .andExpect(jsonPath("$.schedule.timeSlots[0].startTime").value("19:00"))
                 .andExpect(jsonPath("$.schedule.timeSlots[0].endTime").value("20:00"));
 
-        verify(service, times(1)).createSection(any(Section.class));
+        verify(service, times(1)).createSection(any(SectionDTO.class));
     }
 
     @Test
