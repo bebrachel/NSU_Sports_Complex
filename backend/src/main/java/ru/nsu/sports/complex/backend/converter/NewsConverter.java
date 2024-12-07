@@ -7,10 +7,6 @@ import ru.nsu.sports.complex.backend.model.News;
 @Component
 public class NewsConverter {
 
-    private NewsConverter() {
-        throw new IllegalStateException("Utility class");
-    }
-
     public News dtoToNews(NewsDTO newsDTO) {
         News news = new News();
         news.setId(newsDTO.getId());
