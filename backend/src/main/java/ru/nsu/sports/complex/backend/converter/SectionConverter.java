@@ -9,6 +9,9 @@ public class SectionConverter {
     }
 
     public static Section dtoToSection(SectionDTO sectionDTO) {
+        if (sectionDTO.getName() == null || sectionDTO.getName().isBlank()) {
+            throw new IllegalArgumentException("Name must not be null or blank");
+        }
         Section section = new Section();
         section.setName(sectionDTO.getName());
         section.setTeacher(sectionDTO.getTeacher());
