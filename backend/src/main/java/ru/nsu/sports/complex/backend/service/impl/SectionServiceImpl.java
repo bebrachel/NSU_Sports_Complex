@@ -2,9 +2,9 @@ package ru.nsu.sports.complex.backend.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.nsu.sports.complex.backend.converter.ScheduleConverter;
+import ru.nsu.sports.complex.backend.converter.SectionConverter;
 import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
 import ru.nsu.sports.complex.backend.model.Schedule;
@@ -24,13 +24,21 @@ public class SectionServiceImpl implements SectionService {
     @Transactional
     @Override
     public Section findById(Integer id) {
-        return sectionRepository.findById(id).orElse(null);
+        Section section = sectionRepository.findById(id).orElse(null);
+        if (section == null) {
+            throw new NoSuchElementException("Section with ID " + id + " does not exist");
+        }
+        return section;
     }
 
     @Transactional
     @Override
     public Section findByName(String name) {
-        return sectionRepository.findByName(name);
+        Section section = sectionRepository.findByName(name);
+        if (section == null) {
+            throw new NoSuchElementException("Section with name '" + name + "' does not exist");
+        }
+        return section;
     }
 
     @Transactional
@@ -41,28 +49,32 @@ public class SectionServiceImpl implements SectionService {
 
     @Transactional
     @Override
-    public Section createSection(Section section) {
-        for (TimeSlot timeSlot : section.getSchedule().getTimeSlots()) {
-            timeSlot.setSchedule(section.getSchedule());
+    public Section createSection(SectionDTO newSectionDTO) {
+        if (sectionRepository.findByName(newSectionDTO.getName()) != null) {
+            throw new IllegalArgumentException("Section with name '" + newSectionDTO.getName() + "' already exists");
         }
-        return sectionRepository.save(section);
+        Section newSection = SectionConverter.dtoToSection(newSectionDTO);
+        for (TimeSlot timeSlot : newSection.getSchedule().getTimeSlots()) {
+            timeSlot.setSchedule(newSection.getSchedule());
+        }
+        return sectionRepository.save(newSection);
     }
 
     @Transactional
     @Override
-    public Section updateSection(Integer id, SectionDTO updatedSectionDTO) {
+    public Section updateSection(Integer id, SectionDTO updatedSsectionDTO) {
         Section oldSection = sectionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Section not found with id: " + id));
-        if (updatedSectionDTO.getName() != null) {
-            oldSection.setName(updatedSectionDTO.getName());
+        if (updatedSsectionDTO.getName() != null) {
+            oldSection.setName(updatedSsectionDTO.getName());
         }
-        if (updatedSectionDTO.getPlace() != null) {
-            oldSection.setPlace(updatedSectionDTO.getPlace());
+        if (updatedSsectionDTO.getPlace() != null) {
+            oldSection.setPlace(updatedSsectionDTO.getPlace());
         }
-        if (updatedSectionDTO.getTeacher() != null) {
-            oldSection.setTeacher(updatedSectionDTO.getTeacher());
+        if (updatedSsectionDTO.getTeacher() != null) {
+            oldSection.setTeacher(updatedSsectionDTO.getTeacher());
         }
-        ScheduleDTO updatedScheduleDTO = updatedSectionDTO.getSchedule();
+        ScheduleDTO updatedScheduleDTO = updatedSsectionDTO.getSchedule();
         if (updatedScheduleDTO != null) {
             Schedule updatedSchedule = ScheduleConverter.dtoToSchedule(updatedScheduleDTO);
             Schedule oldSchedule = oldSection.getSchedule();
@@ -83,12 +95,8 @@ public class SectionServiceImpl implements SectionService {
         if (section == null) {
             return false;
         }
-        try {
-            sectionRepository.delete(section);
-            return true;
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete section due to related data", e);
-        }
+        sectionRepository.delete(section);
+        return true;
     }
 
     @Transactional
@@ -98,11 +106,7 @@ public class SectionServiceImpl implements SectionService {
         if (section == null) {
             return false;
         }
-        try {
-            sectionRepository.delete(section);
-            return true;
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete section due to related data", e);
-        }
+        sectionRepository.delete(section);
+        return true;
     }
 }

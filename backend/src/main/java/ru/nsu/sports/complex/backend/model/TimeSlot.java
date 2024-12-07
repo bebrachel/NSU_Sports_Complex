@@ -38,12 +38,4 @@ public class TimeSlot {
     @JoinColumn(name = "schedule_id")
     @JsonBackReference
     private Schedule schedule;
-
-    @Override
-    public String toString() {
-        return "TimeSlot: id " + id + " " +
-                "dayOfWeek " + dayOfWeek + " " +
-                startTime + ":" + endTime + " " +
-                "scheduleId " + schedule.getId();
-    }
 }
