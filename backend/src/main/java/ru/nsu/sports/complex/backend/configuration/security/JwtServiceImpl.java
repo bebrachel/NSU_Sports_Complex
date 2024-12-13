@@ -1,4 +1,4 @@
-package ru.nsu.sports.complex.backend.service.impl;
+package ru.nsu.sports.complex.backend.configuration.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import ru.nsu.sports.complex.backend.model.User;
-import ru.nsu.sports.complex.backend.repository.MemberRepository;
-import ru.nsu.sports.complex.backend.service.JwtService;
 
 import java.security.Key;
 import java.util.Date;
@@ -21,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JwtServiceImpl implements JwtService {
+public class JwtServiceImpl {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
@@ -29,12 +26,10 @@ public class JwtServiceImpl implements JwtService {
     public JwtServiceImpl() {
     }
 
-    @Override
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    @Override
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User customUserDetails) {
@@ -44,7 +39,6 @@ public class JwtServiceImpl implements JwtService {
         return generateToken(claims, userDetails);
     }
 
-    @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);

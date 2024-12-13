@@ -5,18 +5,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.nsu.sports.complex.backend.configuration.security.JwtServiceImpl;
 import ru.nsu.sports.complex.backend.dto.JwtAuthenticationResponse;
 import ru.nsu.sports.complex.backend.dto.SignInRequest;
 import ru.nsu.sports.complex.backend.dto.SignUpRequest;
 import ru.nsu.sports.complex.backend.model.User;
-import ru.nsu.sports.complex.backend.service.JwtService;
 import ru.nsu.sports.complex.backend.service.UserService;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl {
     private final UserService userService;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
