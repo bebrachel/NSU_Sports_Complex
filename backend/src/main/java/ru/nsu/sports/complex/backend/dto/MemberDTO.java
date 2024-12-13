@@ -17,4 +17,5 @@ public class MemberDTO {
     private Integer id;
     private String name;
     private String email;
+    private Set<Section> sections = new HashSet<>();
 }

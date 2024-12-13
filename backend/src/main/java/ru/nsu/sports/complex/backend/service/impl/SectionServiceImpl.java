@@ -109,4 +109,20 @@ public class SectionServiceImpl implements SectionService {
         sectionRepository.delete(section);
         return true;
     }
+
+    @Transactional
+    public void removeMemberFromSection(Integer memberId, Integer sectionId) {
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Секция не найдена"));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Мембер не найден"));
+
+        if (!section.getMembers().contains(member)) {
+            throw new IllegalStateException("В этой секции нет такого мембера");
+        }
+
+        member.removeSection(section);
+        memberRepository.save(member);
+    }
 }

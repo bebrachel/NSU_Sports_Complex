@@ -28,9 +28,22 @@ public class Section {
     private String place;
     private Integer capacity;
 
+    @ManyToMany
+    @JoinTable(
+            name = "sections_members",
+            joinColumns = @JoinColumn(name = "section_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<Member> members = new HashSet<>();
+
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "schedule_id", referencedColumnName = "id")
     private Schedule schedule;
+
+    public boolean hasCapacity() {
+        return this.members.size() < this.capacity;
+    }
 
     @Override
     public String toString() {

@@ -107,7 +107,7 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "Удалить секцию.")
+    @Operation(summary = "Удалить мембера.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
@@ -118,5 +118,37 @@ public class MemberController {
         if (memberService.delete(id))
             return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Operation(summary = "Записать мембера в секцию.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мембер успешно записан в секцию", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Секция не найдена или заполнена", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Мембер не найден", content = @Content)
+    })
+    @PostMapping("/{memberId}/assign-to-section/{sectionId}")
+    public ResponseEntity<String> assignMemberToSection(
+            @PathVariable Long memberId,
+            @PathVariable Long sectionId) {
+        memberService.assignMemberToSection(memberId, sectionId);
+        return ResponseEntity.ok("Member successfully assigned to section");
+    }
+
+    @Operation(summary = "Удалить мембера из секции.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мембер успешно удален из секции", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Мембер не найден в секции", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Секция или мембер не найдены", content = @Content)
+    })
+    @DeleteMapping("/{memberId}/remove-from-section/{sectionId}")
+    public ResponseEntity<String> removeMemberFromSection(
+            @PathVariable Long memberId,
+            @PathVariable Long sectionId) {
+        sectionService.removeMemberFromSection(memberId, sectionId);
+        return ResponseEntity.ok("Member successfully removed from section");
     }
 }

@@ -77,4 +77,20 @@ public class MemberServiceImpl implements MemberService {
             return false;
         }
     }
+
+    @Override
+    public void enrollMemberToSection(Integer memberId, Integer sectionId) {
+        Section section = sectionRepository.findSectionWithAvailableCapacity(sectionId)
+                .orElseThrow(() -> new IllegalStateException("В секции нет места или ее не существует"));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Мембер не найден"));
+
+        if (section.getMembers().contains(member)) {
+            throw new IllegalStateException("Мембер уже записан в эту секцию");
+        }
+
+        member.addSection(section);
+        memberRepository.save(member);
+    }
 }
