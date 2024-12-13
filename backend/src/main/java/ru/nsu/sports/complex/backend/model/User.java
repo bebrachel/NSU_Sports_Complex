@@ -3,12 +3,16 @@ package ru.nsu.sports.complex.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
+@Getter
+@Setter
 @Data
 @Entity
 @Table(name = "users")

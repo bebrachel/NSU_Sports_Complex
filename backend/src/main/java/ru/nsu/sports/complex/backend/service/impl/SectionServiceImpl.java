@@ -1,5 +1,6 @@
 package ru.nsu.sports.complex.backend.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,9 +8,11 @@ import ru.nsu.sports.complex.backend.converter.ScheduleConverter;
 import ru.nsu.sports.complex.backend.converter.SectionConverter;
 import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
+import ru.nsu.sports.complex.backend.model.Member;
 import ru.nsu.sports.complex.backend.model.Schedule;
 import ru.nsu.sports.complex.backend.model.Section;
 import ru.nsu.sports.complex.backend.model.TimeSlot;
+import ru.nsu.sports.complex.backend.repository.MemberRepository;
 import ru.nsu.sports.complex.backend.repository.SectionRepository;
 import ru.nsu.sports.complex.backend.service.SectionService;
 
@@ -20,6 +23,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class SectionServiceImpl implements SectionService {
     private final SectionRepository sectionRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     @Override
@@ -108,5 +112,21 @@ public class SectionServiceImpl implements SectionService {
         }
         sectionRepository.delete(section);
         return true;
+    }
+
+    @Transactional
+    public void removeMemberFromSection(Integer memberId, Integer sectionId) {
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Секция не найдена"));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Мембер не найден"));
+
+        if (!section.getMembers().contains(member)) {
+            throw new IllegalStateException("В этой секции нет такого мембера");
+        }
+
+        member.leaveSection(section);
+        memberRepository.save(member);
     }
 }

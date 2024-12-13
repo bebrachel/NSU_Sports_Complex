@@ -11,4 +11,5 @@ public interface MemberService {
     Member update(Integer id, Member object);
     boolean delete(Integer id);
     boolean deleteAll();
+    void enrollMemberToSection(Integer memberId, Integer sectionId);
 }

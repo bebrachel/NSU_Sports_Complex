@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -24,4 +27,17 @@ public class Member {
 
     private String name;
     private String email;
+
+    @ManyToMany(mappedBy = "members")
+    private Set<Section> sections = new HashSet<>();
+
+    public void enrollInSection(Section section) {
+        this.sections.add(section);
+        section.getMembers().add(this);
+    }
+
+    public void leaveSection(Section section) {
+        this.sections.remove(section);
+        section.getMembers().remove(this);
+    }
 }
