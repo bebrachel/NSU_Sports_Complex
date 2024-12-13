@@ -4,13 +4,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
 public class User {
+    public User() {}
+
+    public User(Integer id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -18,13 +24,4 @@ public class User {
     private String name;
     private String email;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_section",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "section_id")
-    )
-
-    // The set of sections that the user is signed up for
-    private Set<Section> sections;
 }

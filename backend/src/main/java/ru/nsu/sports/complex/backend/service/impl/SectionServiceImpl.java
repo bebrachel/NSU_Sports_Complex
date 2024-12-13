@@ -3,30 +3,42 @@ package ru.nsu.sports.complex.backend.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.nsu.sports.complex.backend.converter.ScheduleConverter;
+import ru.nsu.sports.complex.backend.converter.SectionConverter;
+import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
+import ru.nsu.sports.complex.backend.dto.SectionDTO;
+import ru.nsu.sports.complex.backend.model.Schedule;
 import ru.nsu.sports.complex.backend.model.Section;
-import ru.nsu.sports.complex.backend.model.User;
+import ru.nsu.sports.complex.backend.model.TimeSlot;
 import ru.nsu.sports.complex.backend.repository.SectionRepository;
-import ru.nsu.sports.complex.backend.repository.UserRepository;
 import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
 public class SectionServiceImpl implements SectionService {
     private final SectionRepository sectionRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     @Override
     public Section findById(Integer id) {
-        return sectionRepository.findById(id).orElse(null);
+        Section section = sectionRepository.findById(id).orElse(null);
+        if (section == null) {
+            throw new NoSuchElementException("Section with ID " + id + " does not exist");
+        }
+        return section;
     }
 
     @Transactional
     @Override
     public Section findByName(String name) {
-        return sectionRepository.findByName(name);
+        Section section = sectionRepository.findByName(name);
+        if (section == null) {
+            throw new NoSuchElementException("Section with name '" + name + "' does not exist");
+        }
+        return section;
     }
 
     @Transactional
@@ -37,27 +49,43 @@ public class SectionServiceImpl implements SectionService {
 
     @Transactional
     @Override
-    public Section createSection(Section section) {
-        return sectionRepository.save(section);
+    public Section createSection(SectionDTO newSectionDTO) {
+        if (sectionRepository.findByName(newSectionDTO.getName()) != null) {
+            throw new IllegalArgumentException("Section with name '" + newSectionDTO.getName() + "' already exists");
+        }
+        Section newSection = SectionConverter.dtoToSection(newSectionDTO);
+        for (TimeSlot timeSlot : newSection.getSchedule().getTimeSlots()) {
+            timeSlot.setSchedule(newSection.getSchedule());
+        }
+        return sectionRepository.save(newSection);
     }
 
     @Transactional
     @Override
-    public Section updateSection(Section section, Integer id) {
-        Section sectionInDB = sectionRepository.findById(id).orElseThrow();
-        if (section.getName() != null) {
-            sectionInDB.setName(section.getName());
+    public Section updateSection(Integer id, SectionDTO updatedSsectionDTO) {
+        Section oldSection = sectionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Section not found with id: " + id));
+        if (updatedSsectionDTO.getName() != null) {
+            oldSection.setName(updatedSsectionDTO.getName());
         }
-        if (section.getPlace() != null) {
-            sectionInDB.setPlace(section.getPlace());
+        if (updatedSsectionDTO.getPlace() != null) {
+            oldSection.setPlace(updatedSsectionDTO.getPlace());
         }
-        if (section.getTeacher() != null) {
-            sectionInDB.setTeacher(section.getTeacher());
+        if (updatedSsectionDTO.getTeacher() != null) {
+            oldSection.setTeacher(updatedSsectionDTO.getTeacher());
         }
-        if (section.getSchedule() != null) {
-            sectionInDB.setSchedule(section.getSchedule());
+        ScheduleDTO updatedScheduleDTO = updatedSsectionDTO.getSchedule();
+        if (updatedScheduleDTO != null) {
+            Schedule updatedSchedule = ScheduleConverter.dtoToSchedule(updatedScheduleDTO);
+            Schedule oldSchedule = oldSection.getSchedule();
+            oldSchedule.getTimeSlots().clear();
+            List<TimeSlot> timeSlots = updatedSchedule.getTimeSlots();
+            for (TimeSlot timeSlot : timeSlots) {
+                timeSlot.setSchedule(oldSchedule);
+                oldSchedule.getTimeSlots().add(timeSlot);
+            }
         }
-        return sectionInDB;
+        return sectionRepository.save(oldSection);
     }
 
     @Transactional
@@ -80,24 +108,5 @@ public class SectionServiceImpl implements SectionService {
         }
         sectionRepository.delete(section);
         return true;
-    }
-
-    @Transactional
-    @Override
-    public void registerUserInSection(Integer userId, Integer sectionId) {
-        Section section = sectionRepository.findById(sectionId)
-                .orElseThrow(() -> new RuntimeException("Section not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (section.getUsers().size() >= section.getCapacity()) {
-            throw new RuntimeException("No available spots in the section");
-        }
-
-        section.getUsers().add(user);
-        user.getSections().add(section);
-
-        userRepository.save(user);
-        sectionRepository.save(section);
     }
 }
