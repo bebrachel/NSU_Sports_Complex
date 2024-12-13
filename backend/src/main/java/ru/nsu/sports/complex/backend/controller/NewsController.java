@@ -42,7 +42,7 @@ public class NewsController {
         List<NewsDTO> newsDTOList = newsService.findAll()
                 .stream()
                 .map(newsConverter::newsToDTO)
-                .collect(Collectors.toList());
+                .toList();
         return new ResponseEntity<>(newsDTOList, HttpStatus.OK);
     }
 

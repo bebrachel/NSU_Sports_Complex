@@ -17,16 +17,16 @@ public class NewsDTO {
 
     private Integer id;
 
-    @NotBlank(message = "Title cannot be blank")
+    @NotBlank
     private String title;
 
-    @NotBlank(message = "Content cannot be blank")
+    @NotBlank
     private String content;
 
-    @NotNull(message = "Creation date cannot be null")
+    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull(message = "Update date cannot be null")
+    @NotNull
     private LocalDateTime updatedAt;
 
     private String author;
