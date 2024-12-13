@@ -27,8 +27,8 @@ sonar {
 }
 
 checkstyle {
-    toolVersion = '8.45' // or any specific version you need
-    configFile = file("./checkstyle/checkstyle.xml")
+	toolVersion = '8.45' // or any specific version you need
+	configFile = rootProject.file("checkstyle/checkstyle.xml")
 }
 
 configurations {
@@ -49,19 +49,21 @@ tasks.withType(Checkstyle) {
 }
 
 dependencies {
-    implementation 'org.postgresql:postgresql:42.7.4'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
-    implementation 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.postgresql:postgresql:42.7.4'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt:0.12.6'
+	runtimeOnly 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-starter'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
     implementation 'org.flywaydb:flyway-database-postgresql:10.4.1'
 
