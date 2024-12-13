@@ -18,7 +18,7 @@ public final class UserConverter {
         userDTO.setId(user.getId());
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
-        userDTO.setSections(user.getSections());
+        //userDTO.setSections(user.getSections());
         return userDTO;
     }
 }

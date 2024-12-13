@@ -2,6 +2,10 @@ package ru.nsu.sports.complex.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import ru.nsu.sports.complex.backend.model.Member;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter

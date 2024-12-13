@@ -3,6 +3,9 @@ package ru.nsu.sports.complex.backend.converter;
 import org.springframework.stereotype.Component;
 import ru.nsu.sports.complex.backend.dto.MemberDTO;
 import ru.nsu.sports.complex.backend.model.Member;
+import ru.nsu.sports.complex.backend.model.Section;
+
+import java.util.stream.Collectors;
 
 @Component
 public final class MemberConverter {

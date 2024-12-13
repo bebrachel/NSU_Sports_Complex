@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import ru.nsu.sports.complex.backend.model.Member;
+import ru.nsu.sports.complex.backend.model.Section;
 import ru.nsu.sports.complex.backend.repository.MemberRepository;
+import ru.nsu.sports.complex.backend.repository.SectionRepository;
 import ru.nsu.sports.complex.backend.service.MemberService;
 import java.util.List;
 
@@ -15,10 +17,12 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
     private final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
     private final MemberRepository memberRepository;
+    private final SectionRepository sectionRepository;
 
     @Autowired
-    public MemberServiceImpl(MemberRepository memberRepository) {
+    public MemberServiceImpl(MemberRepository memberRepository, SectionRepository sectionRepository) {
         this.memberRepository = memberRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Override
@@ -80,7 +84,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void enrollMemberToSection(Integer memberId, Integer sectionId) {
-        Section section = sectionRepository.findSectionWithAvailableCapacity(sectionId)
+
+        Section section = sectionRepository.findById(sectionId)
+                .filter(Section::hasCapacity)
                 .orElseThrow(() -> new IllegalStateException("В секции нет места или ее не существует"));
 
         Member member = memberRepository.findById(memberId)
@@ -90,7 +96,7 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalStateException("Мембер уже записан в эту секцию");
         }
 
-        member.addSection(section);
+        member.enrollInSection(section);
         memberRepository.save(member);
     }
 }

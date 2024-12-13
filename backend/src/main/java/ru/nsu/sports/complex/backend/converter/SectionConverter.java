@@ -1,7 +1,10 @@
 package ru.nsu.sports.complex.backend.converter;
 
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
+import ru.nsu.sports.complex.backend.model.Member;
 import ru.nsu.sports.complex.backend.model.Section;
+
+import java.util.stream.Collectors;
 
 public class SectionConverter {
     private SectionConverter() {

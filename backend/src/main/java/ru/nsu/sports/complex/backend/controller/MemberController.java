@@ -16,6 +16,7 @@ import ru.nsu.sports.complex.backend.converter.MemberConverter;
 import ru.nsu.sports.complex.backend.dto.MemberDTO;
 import ru.nsu.sports.complex.backend.model.Member;
 import ru.nsu.sports.complex.backend.service.MemberService;
+import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class MemberController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
     private final MemberService memberService;
+    private final SectionService sectionService;
     private final MemberConverter memberConverter;
 
     @Autowired
-    public MemberController(MemberService memberService, MemberConverter memberConverter) {
+    public MemberController(MemberService memberService, MemberConverter memberConverter, SectionService sectionService) {
         this.memberService = memberService;
+        this.sectionService = sectionService;
         this.memberConverter = memberConverter;
     }
 
@@ -129,10 +132,10 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "Мембер не найден", content = @Content)
     })
     @PostMapping("/{memberId}/assign-to-section/{sectionId}")
-    public ResponseEntity<String> assignMemberToSection(
-            @PathVariable Long memberId,
-            @PathVariable Long sectionId) {
-        memberService.assignMemberToSection(memberId, sectionId);
+    public ResponseEntity<String> enrollMemberToSection(
+            @PathVariable Integer memberId,
+            @PathVariable Integer sectionId) {
+        memberService.enrollMemberToSection(memberId, sectionId);
         return ResponseEntity.ok("Member successfully assigned to section");
     }
 
@@ -146,8 +149,8 @@ public class MemberController {
     })
     @DeleteMapping("/{memberId}/remove-from-section/{sectionId}")
     public ResponseEntity<String> removeMemberFromSection(
-            @PathVariable Long memberId,
-            @PathVariable Long sectionId) {
+            @PathVariable Integer memberId,
+            @PathVariable Integer sectionId) {
         sectionService.removeMemberFromSection(memberId, sectionId);
         return ResponseEntity.ok("Member successfully removed from section");
     }

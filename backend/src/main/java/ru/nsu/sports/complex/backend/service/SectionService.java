@@ -14,5 +14,5 @@ public interface SectionService {
     Section updateSection(Integer id, SectionDTO updatedSsectionDTO);
     boolean deleteSectionById(Integer id);
     boolean deleteSectionByName(String name);
-    void removeMemberFromSection();
+    void removeMemberFromSection(Integer memberId, Integer sectionId);
 }
