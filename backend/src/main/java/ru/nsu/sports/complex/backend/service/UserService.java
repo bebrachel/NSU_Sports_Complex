@@ -1,14 +1,27 @@
 package ru.nsu.sports.complex.backend.service;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import ru.nsu.sports.complex.backend.model.User;
-import java.util.List;
 
 public interface UserService {
-    User find(Integer id);
+
+//    User findById(Integer id);
+
     User findByName(String name);
-    List<User> findAll();
-    User create(User object);
-    User update(Integer id, User object);
-    boolean delete(Integer id);
-    boolean deleteAll();
+
+    User findByEmail(String name);
+
+//    List<User> findAllUsers();
+
+    User createUser(User object);
+
+//    Section updateSection(Integer id, SectionDTO updatedSsectionDTO);
+
+//    boolean deleteUserById(Integer id);
+
+//    boolean deleteUserByName(String name);
+
+    UserDetailsService userDetailsService();
+
+    User getCurrentUser();
 }
