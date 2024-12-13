@@ -12,25 +12,25 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.sports.complex.backend.converter.UserConverter;
-import ru.nsu.sports.complex.backend.dto.UserDTO;
-import ru.nsu.sports.complex.backend.model.User;
-import ru.nsu.sports.complex.backend.service.UserService;
+import ru.nsu.sports.complex.backend.converter.MemberConverter;
+import ru.nsu.sports.complex.backend.dto.MemberDTO;
+import ru.nsu.sports.complex.backend.model.Member;
+import ru.nsu.sports.complex.backend.service.MemberService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
+@RequestMapping("/api/members")
+public class MemberController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-    private final UserService userService;
-    private final UserConverter userConverter;
+    private final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
+    private final MemberService memberService;
+    private final MemberConverter memberConverter;
 
     @Autowired
-    public UserController(UserService userService, UserConverter userConverter) {
-        this.userService = userService;
-        this.userConverter = userConverter;
+    public MemberController(MemberService memberService, MemberConverter memberConverter) {
+        this.memberService = memberService;
+        this.memberConverter = memberConverter;
     }
 
     @Operation(summary = "Получить список созданных пользователей.")
@@ -40,12 +40,12 @@ public class UserController {
                     @Schema(implementation = List.class))
             })})
     @GetMapping
-    public ResponseEntity<List<User>> loadAll() {
+    public ResponseEntity<List<Member>> loadAll() {
         LOGGER.info("start loadAll users");
         try {
-            List<User> users = userService.findAll();
-            LOGGER.info("Found {} users", users.size());
-            return new ResponseEntity<>(users, HttpStatus.OK);
+            List<Member> members = memberService.findAll();
+            LOGGER.info("Found {} members", members.size());
+            return new ResponseEntity<>(members, HttpStatus.OK);
         } catch (DataAccessException e) {
             LOGGER.info(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -56,15 +56,15 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = UserDTO.class))
+                    @Schema(implementation = MemberDTO.class))
             })})
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> loadOne(@PathVariable int id) {
-        LOGGER.info("start loadOne user by id: {}", id);
+    public ResponseEntity<MemberDTO> loadOne(@PathVariable int id) {
+        LOGGER.info("start loadOne member by id: {}", id);
         try {
-            User user = userService.find(id);
-            LOGGER.info("Found: {}", user);
-            return new ResponseEntity<>(userConverter.userToDTO(user), HttpStatus.OK);
+            Member member = memberService.find(id);
+            LOGGER.info("Found: {}", member);
+            return new ResponseEntity<>(memberConverter.memberToDTO(member), HttpStatus.OK);
         } catch (DataAccessException e) {
             LOGGER.info(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -75,14 +75,14 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Созданный пользователь.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = UserDTO.class))
+                    @Schema(implementation = MemberDTO.class))
             })})
     @PostMapping
-    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO) {
-        LOGGER.info("start creating user: {}", userDTO);
+    public ResponseEntity<MemberDTO> create(@RequestBody MemberDTO memberDTO) {
+        LOGGER.info("start creating member: {}", memberDTO);
         try {
-            User user = userService.create(userConverter.DTOtoUser(userDTO));
-            return new ResponseEntity<>(userConverter.userToDTO(user), HttpStatus.CREATED);
+            Member member = memberService.create(memberConverter.DTOtoMember(memberDTO));
+            return new ResponseEntity<>(memberConverter.memberToDTO(member), HttpStatus.CREATED);
         } catch (DataAccessException e) {
             LOGGER.info(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -93,14 +93,14 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Обновленный пользователь.", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = UserDTO.class))
+                    @Schema(implementation = MemberDTO.class))
             })})
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable int id, @RequestBody UserDTO userDTO) {
-        LOGGER.info("start update user: {}", userDTO);
+    public ResponseEntity<MemberDTO> update(@PathVariable int id, @RequestBody MemberDTO memberDTO) {
+        LOGGER.info("start update member: {}", memberDTO);
         try {
-            User user = userService.update(id, userConverter.DTOtoUser(userDTO));
-            return new ResponseEntity<>(userConverter.userToDTO(user), HttpStatus.OK);
+            Member member = memberService.update(id, memberConverter.DTOtoMember(memberDTO));
+            return new ResponseEntity<>(memberConverter.memberToDTO(member), HttpStatus.OK);
         } catch (DataAccessException e) {
             LOGGER.info(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -115,7 +115,7 @@ public class UserController {
             })})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        if (userService.delete(id))
+        if (memberService.delete(id))
             return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

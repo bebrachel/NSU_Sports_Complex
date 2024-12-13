@@ -5,7 +5,9 @@ COPY build.gradle settings.gradle ./
 
 COPY src ./src
 
-RUN gradle clean build
+COPY checkstyle ./checkstyle
+
+RUN gradle clean build -x test
 
 FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app

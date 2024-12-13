@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" , "nocarend/scrum-42" ]
+    branches: [ "main" ]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -72,7 +72,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew checkstyleMain build sonar --info
+        run: ./gradlew checkstyleMain build -x test sonar --info
         working-directory: ./backend
 
   test:
