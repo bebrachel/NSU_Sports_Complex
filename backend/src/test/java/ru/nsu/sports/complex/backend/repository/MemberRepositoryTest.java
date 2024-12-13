@@ -10,7 +10,8 @@ import ru.nsu.sports.complex.backend.service.impl.MemberServiceImpl;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 class MemberRepositoryTest {
