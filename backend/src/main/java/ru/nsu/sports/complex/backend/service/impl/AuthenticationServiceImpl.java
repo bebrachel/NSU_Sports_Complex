@@ -9,13 +9,14 @@ import ru.nsu.sports.complex.backend.dto.JwtAuthenticationResponse;
 import ru.nsu.sports.complex.backend.dto.SignInRequest;
 import ru.nsu.sports.complex.backend.dto.SignUpRequest;
 import ru.nsu.sports.complex.backend.model.User;
+import ru.nsu.sports.complex.backend.service.JwtService;
 import ru.nsu.sports.complex.backend.service.UserService;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl {
     private final UserService userService;
-    private final JwtServiceImpl jwtServiceImpl;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -26,7 +27,7 @@ public class AuthenticationServiceImpl {
 
         userService.createUser(user);
 
-        var jwt = jwtServiceImpl.generateToken(user);
+        var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
 
@@ -40,7 +41,7 @@ public class AuthenticationServiceImpl {
                 .userDetailsService()
                 .loadUserByUsername(request.getEmail());
 
-        var jwt = jwtServiceImpl.generateToken(user);
+        var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
     }
 }
