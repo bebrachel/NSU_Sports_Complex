@@ -1,11 +1,15 @@
 package ru.nsu.sports.complex.backend.controller;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.nsu.sports.complex.backend.configuration.security.JwtAuthenticationFilter;
+import ru.nsu.sports.complex.backend.configuration.security.JwtServiceImpl;
 import ru.nsu.sports.complex.backend.converter.ScheduleConverter;
 import ru.nsu.sports.complex.backend.dto.ScheduleDTO;
 import ru.nsu.sports.complex.backend.dto.SectionDTO;
@@ -26,10 +30,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SectionController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class SectionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private JwtServiceImpl jwtService;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @MockBean
     private SectionService service;
