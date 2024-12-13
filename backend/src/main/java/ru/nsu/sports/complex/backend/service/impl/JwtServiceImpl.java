@@ -5,11 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ru.nsu.sports.complex.backend.model.User;
+import ru.nsu.sports.complex.backend.repository.MemberRepository;
 import ru.nsu.sports.complex.backend.service.JwtService;
 
 import java.security.Key;
@@ -21,6 +23,10 @@ import java.util.Map;
 public class JwtServiceImpl implements JwtService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
+
+    @Autowired
+    public JwtServiceImpl() {
+    }
 
     @Override
     public String extractUserName(String token) {
