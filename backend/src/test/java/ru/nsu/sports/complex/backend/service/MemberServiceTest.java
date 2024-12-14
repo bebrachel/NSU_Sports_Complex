@@ -1,7 +1,5 @@
 package ru.nsu.sports.complex.backend.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,6 +12,9 @@ import ru.nsu.sports.complex.backend.service.impl.MemberServiceImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class MemberServiceTest {
 
