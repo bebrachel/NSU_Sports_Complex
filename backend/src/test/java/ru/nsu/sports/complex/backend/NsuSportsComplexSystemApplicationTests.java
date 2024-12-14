@@ -6,8 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.nsu.sports.complex.backend.configuration.security.JwtAuthenticationFilter;
+import ru.nsu.sports.complex.backend.configuration.security.JwtServiceImpl;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,9 +18,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 class NsuSportsComplexSystemApplicationTests {
+
+    @MockBean
+    private JwtServiceImpl jwtService;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
     void contextLoads() {
@@ -82,7 +91,8 @@ class NsuSportsComplexSystemApplicationTests {
         String userJson = """
                     {
                       "name": "john doe",
-                      "email": "johndoe@example.com"
+                      "email": "johndoe@example.com",
+                      "password": "12345"
                     }
                 """;
 
@@ -92,9 +102,31 @@ class NsuSportsComplexSystemApplicationTests {
                         .content(userJson))
 
                 // Then: Проверяем успешное выполнение запроса.
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("john doe"))
                 .andExpect(jsonPath("$.email").value("johndoe@example.com"));
+    }
+
+    // Use-case: Пользователь хочет создать нового мембера.
+    @Test
+    void testAddNewMemberIntegration() throws Exception {
+        // Given: данные нового мембера.
+        String memberJson = """
+                    {
+                      "name": "New Member",
+                      "email": "newmember@example.com"
+                    }
+                """;
+
+        // When: Выполняем POST-запрос на создание нового мембера.
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(memberJson))
+
+                // Then: Проверяем успешное выполнение запроса.
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New Member"))
+                .andExpect(jsonPath("$.email").value("newmember@example.com"));
     }
 }
 
