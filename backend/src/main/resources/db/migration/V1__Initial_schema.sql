@@ -20,10 +20,9 @@ ALTER TABLE public.schedules
 CREATE TABLE public.sections
 (
     id          integer                NOT NULL,
-    schedule_id integer UNIQUE,
+    schedule_id integer,
     name        character varying(255) NOT NULL,
     place       character varying(255),
-    capacity integer,
     teacher     character varying(255)
 );
 
@@ -38,15 +37,6 @@ ALTER TABLE public.sections
         CACHE 1
         );
 
--- Name: sections_members; Type: TABLE; Schema: public;
-CREATE TABLE public.sections_members
-(
-    section_id integer NOT NULL,
-    member_id  integer NOT NULL,
-    PRIMARY KEY (section_id, member_id),
-    CONSTRAINT fk_section FOREIGN KEY (section_id) REFERENCES public.sections (id) ON DELETE CASCADE,
-    CONSTRAINT fk_member FOREIGN KEY (member_id) REFERENCES public.members (id) ON DELETE CASCADE
-);
 
 -- Name: time_slots; Type: TABLE; Schema: public;
 CREATE TABLE public.time_slots
@@ -94,7 +84,7 @@ ALTER TABLE public.members
 -- Name: users; Type: TABLE; Schema: public;
 CREATE TABLE public.users
 (
-    id    integer NOT NULL,
+    id       integer NOT NULL,
     email    character varying(255),
     name     character varying(255),
     password character varying(255)
@@ -121,13 +111,13 @@ ALTER TABLE ONLY public.schedules
 ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_pkey PRIMARY KEY (id);
 
--- Name: sections sections_name_key; Type: CONSTRAINT; Schema: public;  
+-- Name: sections sections_name_key; Type: CONSTRAINT; Schema: public;
 ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_name_key UNIQUE (name);
 
 -- Name: sections sections_schedule_id_key; Type: CONSTRAINT; Schema: public;
---ALTER TABLE ONLY public.sections
---    ADD CONSTRAINT sections_schedule_id_key UNIQUE (schedule_id);
+ALTER TABLE ONLY public.sections
+    ADD CONSTRAINT sections_schedule_id_key UNIQUE (schedule_id);
 
 
 -- Name: time_slots time_slots_pkey; Type: CONSTRAINT; Schema: public;

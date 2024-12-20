@@ -3,7 +3,6 @@ package ru.nsu.sports.complex.backend.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -13,10 +12,14 @@ import java.util.Set;
 @Table(name = "sections")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Section {
+    public Section() {
+        this.capacity = 1;
+    }
+
     public Section(String name) {
         this.name = name;
+        this.capacity = 1;
     }
 
     @Id
@@ -29,6 +32,7 @@ public class Section {
 
     private String teacher;
     private String place;
+
     private Integer capacity;
 
     @ManyToMany

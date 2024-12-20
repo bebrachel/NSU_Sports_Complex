@@ -19,7 +19,7 @@ public class SectionDTO {
     private Integer id;
     private String teacher;
     private String place;
-    private Integer capacity;
+    private Integer capacity = 1;
     private ScheduleDTO schedule;
     private Set<Member> members = new HashSet<>();
 }

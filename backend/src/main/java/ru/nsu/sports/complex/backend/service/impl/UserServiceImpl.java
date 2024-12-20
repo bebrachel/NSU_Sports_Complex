@@ -43,11 +43,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
         if (userRepository.existsByName(user.getUsername())) {
-            throw new RuntimeException("Пользователь с таким именем уже существует");
+            throw new IllegalArgumentException("Пользователь с таким именем уже существует");
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
         return save(user);
