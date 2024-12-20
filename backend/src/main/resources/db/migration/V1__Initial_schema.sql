@@ -20,7 +20,7 @@ ALTER TABLE public.schedules
 CREATE TABLE public.sections
 (
     id          integer                NOT NULL,
-    schedule_id integer,
+    schedule_id integer UNIQUE,
     name        character varying(255) NOT NULL,
     place       character varying(255),
     capacity integer,
@@ -126,8 +126,8 @@ ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_name_key UNIQUE (name);
 
 -- Name: sections sections_schedule_id_key; Type: CONSTRAINT; Schema: public;
-ALTER TABLE ONLY public.sections
-    ADD CONSTRAINT sections_schedule_id_key UNIQUE (schedule_id);
+--ALTER TABLE ONLY public.sections
+--    ADD CONSTRAINT sections_schedule_id_key UNIQUE (schedule_id);
 
 
 -- Name: time_slots time_slots_pkey; Type: CONSTRAINT; Schema: public;
