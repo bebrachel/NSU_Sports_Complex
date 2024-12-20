@@ -23,6 +23,7 @@ CREATE TABLE public.sections
     schedule_id integer,
     name        character varying(255) NOT NULL,
     place       character varying(255),
+    capacity integer,
     teacher     character varying(255)
 );
 
