@@ -1,5 +1,6 @@
 package ru.nsu.sports.complex.backend.repository;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
+@Transactional
 class UserRepositoryTest {
 
 
@@ -68,7 +70,7 @@ class UserRepositoryTest {
     @Test
     void testFindAll() {
         List<User> users = repository.findAll();
-        assertEquals(2, users.size());
+        assertEquals(1, users.size());
     }
 
     @Test
