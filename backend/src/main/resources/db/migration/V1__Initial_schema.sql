@@ -84,7 +84,7 @@ ALTER TABLE public.members
 -- Name: users; Type: TABLE; Schema: public;
 CREATE TABLE public.users
 (
-    id    integer NOT NULL,
+    id       integer NOT NULL,
     email    character varying(255),
     name     character varying(255),
     password character varying(255)
@@ -111,7 +111,7 @@ ALTER TABLE ONLY public.schedules
 ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_pkey PRIMARY KEY (id);
 
--- Name: sections sections_name_key; Type: CONSTRAINT; Schema: public;  
+-- Name: sections sections_name_key; Type: CONSTRAINT; Schema: public;
 ALTER TABLE ONLY public.sections
     ADD CONSTRAINT sections_name_key UNIQUE (name);
 

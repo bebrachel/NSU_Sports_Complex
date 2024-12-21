@@ -16,6 +16,7 @@ import ru.nsu.sports.complex.backend.converter.MemberConverter;
 import ru.nsu.sports.complex.backend.dto.MemberDTO;
 import ru.nsu.sports.complex.backend.model.Member;
 import ru.nsu.sports.complex.backend.service.MemberService;
+import ru.nsu.sports.complex.backend.service.SectionService;
 
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class MemberController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
     private final MemberService memberService;
+    private final SectionService sectionService;
     private final MemberConverter memberConverter;
 
     @Autowired
-    public MemberController(MemberService memberService, MemberConverter memberConverter) {
+    public MemberController(MemberService memberService, MemberConverter memberConverter, SectionService sectionService) {
         this.memberService = memberService;
+        this.sectionService = sectionService;
         this.memberConverter = memberConverter;
     }
 
@@ -107,7 +110,7 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "Удалить секцию.")
+    @Operation(summary = "Удалить мембера.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {
                     @Content(mediaType = "application/json", schema =
@@ -118,5 +121,37 @@ public class MemberController {
         if (memberService.delete(id))
             return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Operation(summary = "Записать мембера в секцию.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мембер успешно записан в секцию", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Секция не найдена или заполнена", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Мембер не найден", content = @Content)
+    })
+    @PostMapping("/{memberId}/assign-to-section/{sectionId}")
+    public ResponseEntity<String> enrollMemberToSection(
+            @PathVariable Integer memberId,
+            @PathVariable Integer sectionId) {
+        memberService.enrollMemberToSection(memberId, sectionId);
+        return ResponseEntity.ok("Member successfully assigned to section");
+    }
+
+    @Operation(summary = "Удалить мембера из секции.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мембер успешно удален из секции", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Мембер не найден в секции", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Секция или мембер не найдены", content = @Content)
+    })
+    @DeleteMapping("/{memberId}/remove-from-section/{sectionId}")
+    public ResponseEntity<String> removeMemberFromSection(
+            @PathVariable Integer memberId,
+            @PathVariable Integer sectionId) {
+        sectionService.removeMemberFromSection(memberId, sectionId);
+        return ResponseEntity.ok("Member successfully removed from section");
     }
 }
